@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exercice — Fauteuil roulant : couple et vitesse du moteur</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="exo.css">
+</head>
+<body>
+<header class="top"><div class="top-in"><span class="brand">SI 1re–Tle</span><a href="index.html">Accueil du test</a><a href="fiche-d2-01.html">Fiche D2-01</a></div></header>
+<main><article class="sheet">
+
+  <div class="hero">
+    <img class="avatar" src="img/android_exercice.jpg" alt="">
+    <div>
+      <div class="badges"><span class="badge id code">Exercice</span><span class="badge type">Terminale · type bac</span><span class="badge">Fiches D2-01 · A1-03</span></div>
+      <h1>Fauteuil roulant électrique : validation des motoréducteurs</h1>
+    </div>
+  </div>
+
+  <p class="context">Un système de propulsion électrique transforme un fauteuil roulant manuel en fauteuil électrique. Chaque roue motrice est entraînée par son propre motoréducteur (moteur + réducteur). On veut vérifier que ce système peut transporter une personne de 160 kg sur une pente de 20 %, à la vitesse maximale de 6 km/h.</p>
+
+  <h2>Données</h2>
+  <table class="data">
+    <tr><th>Élément</th><th>Caractéristiques</th></tr>
+    <tr><td>Roue motrice (×2)</td><td>diamètre D<sub>m</sub> = 610 mm</td></tr>
+    <tr><td>Réducteur (×2)</td><td>rapport de réduction r = ω<sub>roue</sub> / ω<sub>m</sub> = 1/30 ; rendement η<sub>red</sub> = 0,95</td></tr>
+    <tr><td>Moteur (×2)</td><td>valeurs nominales : 300 W ; 2 N·m ; 1 500 tr/min</td></tr>
+    <tr><td>Action du sol</td><td>action tangentielle du sol sur <b>les deux roues</b> : T<sub>B</sub> ≈ 385 N (résultat de la question 1.9)</td></tr>
+    <tr><td>Vitesse du fauteuil</td><td>V = 6 km/h (valeur maximale)</td></tr>
+  </table>
+
+  <!-- Question 1.10 -->
+  <section class="question" data-q="q110">
+    <p><span class="qn">Question 1.10</span> — Calculer le couple en sortie d'un des deux moteurs, en N·m, sachant que l'action tangentielle T<sub>B</sub> correspond à l'action du sol s'exerçant sur les deux roues.</p>
+    <div class="answer">
+      <label for="c110">C<sub>m</sub> =</label><input id="c110" data-k="main" inputmode="decimal" placeholder="ta valeur"><span class="unit">N·m</span>
+      <button class="btn check-btn" type="button" data-k="main">Vérifier</button>
+    </div>
+    <div class="tools">
+      <button class="btn ghost hint-btn" type="button">Coup de pouce</button><span class="counter hint-count"></span>
+      <button class="btn warn corr-btn" type="button">Voir la correction</button>
+    </div>
+    <div class="feedback"></div>
+    <div class="correction">
+      <h3>Correction</h3>
+      <ol>
+        <li><b>Couple à une roue.</b> T<sub>B</sub> s'exerce sur les deux roues, donc T<sub>B</sub>/2 sur une roue, avec un bras de levier égal au rayon R<sub>m</sub> = D<sub>m</sub>/2 = 0,305 m :
+          <math display="block"><msub><mi>C</mi><mtext>roue</mtext></msub><mo>=</mo><mfrac><msub><mi>T</mi><mi mathvariant="normal">B</mi></msub><mn>2</mn></mfrac><mo>×</mo><msub><mi>R</mi><mi mathvariant="normal">m</mi></msub><mo>=</mo><mfrac><mn>385</mn><mn>2</mn></mfrac><mo>×</mo><mn>0,305</mn><mo>≈</mo><mn>58,7</mn><mtext> N·m</mtext></math></li>
+        <li><b>Je retrouve la relation entre C<sub>m</sub> et C<sub>roue</sub>.</b> On isole le réducteur :
+          <math display="block"><mi>r</mi><mo>=</mo><mfrac><msub><mi>ω</mi><mtext>roue</mtext></msub><msub><mi>ω</mi><mi mathvariant="normal">m</mi></msub></mfrac><mspace width="1em"/><msub><mi>P</mi><mtext>entrée</mtext></msub><mo>=</mo><msub><mi>C</mi><mi mathvariant="normal">m</mi></msub><mo>·</mo><msub><mi>ω</mi><mi mathvariant="normal">m</mi></msub><mspace width="1em"/><msub><mi>P</mi><mtext>sortie</mtext></msub><mo>=</mo><msub><mi>C</mi><mtext>roue</mtext></msub><mo>·</mo><msub><mi>ω</mi><mtext>roue</mtext></msub></math>
+          <math display="block"><msub><mi>η</mi><mtext>red</mtext></msub><mo>=</mo><mfrac><mrow><msub><mi>C</mi><mtext>roue</mtext></msub><mo>·</mo><msub><mi>ω</mi><mtext>roue</mtext></msub></mrow><mrow><msub><mi>C</mi><mi mathvariant="normal">m</mi></msub><mo>·</mo><msub><mi>ω</mi><mi mathvariant="normal">m</mi></msub></mrow></mfrac><mo>=</mo><mfrac><msub><mi>C</mi><mtext>roue</mtext></msub><msub><mi>C</mi><mi mathvariant="normal">m</mi></msub></mfrac><mo>×</mo><mi>r</mi><mspace width="1em"/><mo>⇒</mo><mspace width="1em"/><msub><mi>C</mi><mi mathvariant="normal">m</mi></msub><mo>=</mo><mfrac><mrow><msub><mi>C</mi><mtext>roue</mtext></msub><mo>×</mo><mi>r</mi></mrow><msub><mi>η</mi><mtext>red</mtext></msub></mfrac></math></li>
+        <li><b>Application numérique :</b> <math><msub><mi>C</mi><mi mathvariant="normal">m</mi></msub><mo>=</mo><mfrac><mrow><mn>58,7</mn><mo>×</mo><mn>1</mn><mo>/</mo><mn>30</mn></mrow><mn>0,95</mn></mfrac><mo>≈</mo><mn>2,06</mn><mtext> N·m</mtext></math></li>
+      </ol>
+      <div class="check"><b>✓ Contrôle de bon sens :</b> le couple du moteur (2,06 N·m) est bien plus petit que celui de la roue (58,7 N·m) : c'est cohérent avec un réducteur. Et il est un peu plus grand que le cas sans pertes (58,7/30 ≈ 1,96 N·m) : les pertes du réducteur obligent le moteur à forcer un peu plus.</div>
+      <p class="renvoi">Pour revoir : <a href="fiche-d2-01.html#formules">fiche D2-01, formule F4 et « je retrouve »</a> · <a href="fiche-d2-01.html#controles">contrôles K2 et K3</a></p>
+    </div>
+  </section>
+
+  <!-- Question 1.11 -->
+  <section class="question" data-q="q111">
+    <p><span class="qn">Question 1.11</span> — La vitesse du fauteuil est considérée à sa valeur maximale de 6 km/h. Calculer la vitesse angulaire de la roue motrice en rad/s. En déduire la vitesse angulaire en sortie du moteur en rad/s, puis en tr/min.</p>
+    <div class="answer">
+      <label for="w1">ω<sub>roue</sub> =</label><input id="w1" data-k="wr" inputmode="decimal" placeholder="ta valeur"><span class="unit">rad/s</span>
+      <button class="btn check-btn" type="button" data-k="wr">Vérifier</button>
+    </div>
+    <div class="answer">
+      <label for="w2">ω<sub>m</sub> =</label><input id="w2" data-k="wm" inputmode="decimal" placeholder="ta valeur"><span class="unit">rad/s</span>
+      <button class="btn check-btn" type="button" data-k="wm">Vérifier</button>
+    </div>
+    <div class="answer">
+      <label for="w3">N<sub>m</sub> =</label><input id="w3" data-k="nm" inputmode="decimal" placeholder="ta valeur"><span class="unit">tr/min</span>
+      <button class="btn check-btn" type="button" data-k="nm">Vérifier</button>
+    </div>
+    <div class="tools">
+      <button class="btn ghost hint-btn" type="button">Coup de pouce</button><span class="counter hint-count"></span>
+      <button class="btn warn corr-btn" type="button">Voir la correction</button>
+    </div>
+    <div class="feedback"></div>
+    <div class="correction">
+      <h3>Correction</h3>
+      <ol>
+        <li>Vitesse en m/s : 6 km/h = 6/3,6 ≈ 1,67 m/s. Vitesse d'un point de la roue : <math><mi>V</mi><mo>=</mo><msub><mi>ω</mi><mtext>roue</mtext></msub><mo>×</mo><mfrac><msub><mi>D</mi><mi mathvariant="normal">m</mi></msub><mn>2</mn></mfrac></math>, donc <math><msub><mi>ω</mi><mtext>roue</mtext></msub><mo>=</mo><mfrac><mrow><mn>2</mn><mo>×</mo><mi>V</mi></mrow><msub><mi>D</mi><mi mathvariant="normal">m</mi></msub></mfrac><mo>=</mo><mfrac><mrow><mn>2</mn><mo>×</mo><mn>1,67</mn></mrow><mn>0,610</mn></mfrac><mo>≈</mo><mn>5,46</mn><mtext> rad/s</mtext></math>.</li>
+        <li><math><msub><mi>ω</mi><mi mathvariant="normal">m</mi></msub><mo>=</mo><mfrac><msub><mi>ω</mi><mtext>roue</mtext></msub><mi>r</mi></mfrac><mo>=</mo><mn>5,46</mn><mo>×</mo><mn>30</mn><mo>≈</mo><mn>163,9</mn><mtext> rad/s</mtext></math></li>
+        <li><math><msub><mi>N</mi><mi mathvariant="normal">m</mi></msub><mo>=</mo><mfrac><mrow><mn>60</mn><mo>×</mo><msub><mi>ω</mi><mi mathvariant="normal">m</mi></msub></mrow><mrow><mn>2</mn><mi>π</mi></mrow></mfrac><mo>≈</mo><mn>1</mn><mspace width="0.2em"/><mn>565</mn><mtext> tr/min</mtext></math></li>
+      </ol>
+      <div class="check"><b>✓ Contrôles de bon sens :</b> le moteur tourne 30 fois plus vite que la roue (réducteur) ; la valeur en rad/s (163,9) est environ 10 fois plus petite que celle en tr/min (1 565). Le moteur doit tourner un peu plus vite que sa vitesse nominale (1 500 tr/min) : c'est l'objet de la question suivante du sujet.</div>
+      <p class="renvoi">Pour revoir : <a href="fiche-d2-01.html#formules">fiche D2-01, formule F1</a> · conversions tr/min ↔ rad/s et km/h ↔ m/s : fiche A1-03 (bientôt en ligne)</p>
+    </div>
+  </section>
+
+  <h2>Ton avis (2 minutes)</h2>
+  <form class="survey" id="survey" onsubmit="return false">
+    <fieldset><legend>Quelle partie de la fiche D2-01 t'a le plus servi ?</legend>
+      <label><input type="checkbox" value="schéma bloc">schéma bloc</label><label><input type="checkbox" value="l'essentiel">l'essentiel</label><label><input type="checkbox" value="je retrouve">je retrouve</label><label><input type="checkbox" value="contrôles">contrôles de bon sens</label><label><input type="checkbox" value="pas ouverte">je ne l'ai pas ouverte</label></fieldset>
+    <fieldset><legend>Les coups de pouce étaient…</legend>
+      <label><input type="radio" name="h" value="trop vagues">trop vagues</label><label><input type="radio" name="h" value="bien dosés">bien dosés</label><label><input type="radio" name="h" value="trop précis">trop précis</label><label><input type="radio" name="h" value="pas utilisés">pas utilisés</label></fieldset>
+    <fieldset><legend>Le message après « Vérifier » t'a-t-il aidé à trouver ton erreur ?</legend>
+      <label><input type="radio" name="v" value="oui">oui</label><label><input type="radio" name="v" value="un peu">un peu</label><label><input type="radio" name="v" value="non">non</label><label><input type="radio" name="v" value="pas d'erreur">pas d'erreur</label></fieldset>
+    <fieldset><legend>Une remarque ?</legend><textarea></textarea></fieldset>
+    <button class="btn" type="button" id="copy-survey">Copier mes réponses</button><span class="copied" id="copied"></span>
+    <textarea id="survey-out" hidden></textarea>
+    <p class="counter">Coups de pouce utilisés sur la page : <b id="hint-total">0</b></p>
+  </form>
+
+</article></main>
+<footer class="note">Exercice d'après l'évaluation type bac de terminale (sujet « fauteuil roulant »). Version de test.</footer>
+
+<script>
+window.EXO = {
+  title: 'Exercice Fauteuil Q1.10–1.11',
+  avatar: 'img/android_exercice.jpg',
+  penalty: '−0,5 pt',
+  questions: {
+    q110: {
+      hints: [
+        'T<sub>B</sub> est l’action du sol sur <b>les deux</b> roues : quelle part revient à une roue ? Pour passer d’une force à un couple, quel bras de levier : le rayon ou le diamètre ?',
+        'Écris les expressions littérales : du rapport de réduction r en fonction de ω<sub>roue</sub> et ω<sub>m</sub> ; des puissances en entrée et en sortie du réducteur ; du rendement η<sub>red</sub> en fonction de ces puissances.',
+        'Dans l’expression du rendement, fais apparaître le rapport des vitesses angulaires et remplace-le par r.',
+        'Isole le couple recherché C<sub>m</sub>, puis fais l’application numérique.'
+      ],
+      answers: { main: [
+        {v:2.06, tol:0.025, ok:true, msg:'Bravo, C<sub>m</sub> ≈ 2,06 N·m. Vérifie quand même : le couple du moteur est bien plus petit que celui de la roue, et un peu plus grand que le cas sans pertes (1,96 N·m).'},
+        {v:1.957, tol:0.02, msg:'Presque : c’est le couple qu’il faudrait <b>sans pertes</b>. Le réducteur perd 5 % de la puissance, donc le moteur doit fournir un peu plus. ⚠ Contrôle K3 de la fiche D2-01.'},
+        {v:1.859, tol:0.02, msg:'Le rendement est mal placé : ton couple moteur est plus petit que le cas sans pertes (1,96 N·m), alors que les pertes obligent le moteur à forcer <b>plus</b>. ⚠ Contrôle K3 : repars de P<sub>sortie</sub> = η × P<sub>entrée</sub>.'},
+        {v:4.12, tol:0.02, msg:'Tu trouves le double de la valeur attendue. Deux causes possibles : tu as appliqué T<sub>B</sub> en entier sur une seule roue (il s’exerce sur les deux), ou tu as pris le diamètre au lieu du rayon.'},
+        {v:8.24, tol:0.02, msg:'Tu trouves 4 fois la valeur attendue : T<sub>B</sub> s’exerce sur les deux roues (à diviser par 2) <b>et</b> le bras de levier est le rayon, pas le diamètre.'},
+        {v:58.7, tol:0.02, msg:'C’est le couple <b>à la roue</b>. La question demande le couple du moteur : il faut remonter à travers le réducteur.'},
+        {v:117.4, tol:0.02, msg:'C’est un couple à la roue, et en plus calculé avec T<sub>B</sub> entier (ou le diamètre). Commence par le couple sur une roue, puis remonte au moteur à travers le réducteur.'},
+        {v:1854, tol:0.03, msg:'⚠ Contrôle K2 : avec un réducteur, le couple du moteur doit être <b>plus petit</b> que celui de la roue. Tu as utilisé le rapport à l’envers.'},
+        {v:1673, tol:0.03, msg:'⚠ Contrôles K2 et K3 : le rapport est utilisé à l’envers (le couple moteur doit être plus petit que celui de la roue), et le rendement est mal placé.'}
+      ]},
+      unknown: 'Ce n’est pas la valeur attendue. Contrôle de bon sens : un couple moteur de réducteur 1/30 doit être environ 30 fois plus petit que le couple à la roue. Calcule d’abord le couple sur une roue.'
+    },
+    q111: {
+      hints: [
+        'Commence par convertir 6 km/h en m/s : 1 km = 1 000 m et 1 h = 3 600 s.',
+        'Un point de la périphérie de la roue avance à la vitesse du fauteuil : V = ω<sub>roue</sub> × R. Attention : rayon, pas diamètre.',
+        'Le moteur est en entrée du réducteur, la roue en sortie : r = ω<sub>roue</sub> / ω<sub>m</sub>. Le moteur tourne-t-il plus vite ou moins vite que la roue ?',
+        'Pour passer en tr/min : un tour = 2π rad, une minute = 60 s.'
+      ],
+      answers: {
+        wr: [
+          {v:5.464, tol:0.02, ok:true, msg:'Juste : ω<sub>roue</sub> ≈ 5,46 rad/s.'},
+          {v:19.67, tol:0.02, msg:'Tu as utilisé 6 directement : il faut d’abord convertir les km/h en m/s (diviser par 3,6). ⚠ Ta valeur en rad/s est trop grande de 3,6.'},
+          {v:2.732, tol:0.02, msg:'Tu as divisé par le diamètre : V = ω × R avec le <b>rayon</b> (0,305 m).'},
+          {v:9.836, tol:0.02, msg:'Il manque la conversion km/h → m/s ou un facteur 2 sur le rayon : refais le calcul en unités SI.'}
+        ],
+        wm: [
+          {v:163.9, tol:0.02, ok:true, msg:'Juste : ω<sub>m</sub> ≈ 163,9 rad/s. Le moteur tourne 30 fois plus vite que la roue.'},
+          {v:0.1821, tol:0.03, msg:'⚠ Contrôle K1 : le moteur est en entrée d’un réducteur, il doit tourner <b>plus vite</b> que la roue. Tu as multiplié par r au lieu de diviser.'},
+          {v:590.2, tol:0.02, msg:'Le passage par le réducteur est juste, mais ω<sub>roue</sub> est fausse : vérifie la conversion des km/h en m/s.'},
+          {v:81.97, tol:0.02, msg:'Le passage par le réducteur est juste, mais ω<sub>roue</sub> a été calculée avec le diamètre au lieu du rayon.'}
+        ],
+        nm: [
+          {v:1565, tol:0.02, ok:true, msg:'Juste : N<sub>m</sub> ≈ 1 565 tr/min. Contrôle : c’est environ 10 fois la valeur en rad/s.'},
+          {v:17.17, tol:0.03, msg:'⚠ Conversion à l’envers : en tr/min, on doit trouver environ 10 fois <b>plus</b> qu’en rad/s. N = 60 × ω / 2π.'},
+          {v:9836, tol:0.02, msg:'Il manque le 2π : un tour vaut 2π radians. N = 60 × ω / 2π.'},
+          {v:26.09, tol:0.02, msg:'Il manque le 60 : une minute vaut 60 secondes. N = 60 × ω / 2π.'}
+        ]
+      }
+    }
+  }
+};
+</script>
+<script src="exo.js"></script>
+</body>
+</html>

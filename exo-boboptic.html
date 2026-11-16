@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exercice — Boboptic : vitesse du chariot</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="exo.css">
+</head>
+<body>
+<header class="top"><div class="top-in"><span class="brand">SI 1re–Tle</span><a href="index.html">Accueil du test</a><a href="fiche-d2-01.html">Fiche D2-01</a></div></header>
+<main><article class="sheet">
+
+  <div class="hero">
+    <img class="avatar" src="img/android_exercice.jpg" alt="">
+    <div>
+      <div class="badges"><span class="badge id code">Exercice</span><span class="badge type">Révision de 1re · e3c 032</span><span class="badge">Fiches D2-01 · D2-04 · A1-03</span></div>
+      <h1>Boboptic : la vitesse du chariot essuyeur</h1>
+    </div>
+  </div>
+
+  <p class="context">Boboptic est une machine qui lave les lunettes. Pour améliorer le nettoyage, on ajoute un rouleau essuyeur : le rouleau 9 tourne par rapport au chariot 1, et le chariot se translate par rapport au bâti 10 grâce à un système pignon 5 – crémaillère 6. Pour nettoyer efficacement sans déformer les lunettes, le cahier des charges impose une vitesse du chariot de <b>0,15 m/s</b>.</p>
+
+  <div class="figs">
+    <figure><img src="img/boboptic_perspective.png" alt="Perspective du système à rouleau"><figcaption>Perspective du système à rouleau</figcaption></figure>
+    <figure><img src="img/boboptic_schema.png" alt="Schéma cinématique partiel"><figcaption>Schéma cinématique partiel de la mise en rotation du rouleau</figcaption></figure>
+  </div>
+
+  <h2>Nomenclature</h2>
+  <table class="data">
+    <tr><th>Repère</th><th>Désignation</th><th>Données</th></tr>
+    <tr><td>2</td><td>Moteur</td><td>N<sub>moteur/1</sub> = 750 tr/min</td></tr>
+    <tr><td>3</td><td>Pignon moteur</td><td>Z<sub>3</sub> = 12 dents</td></tr>
+    <tr><td>4</td><td>Roue réceptrice</td><td>Z<sub>4</sub> = 72 dents</td></tr>
+    <tr><td>5</td><td>Pignon</td><td>Z<sub>5</sub> = 25 dents</td></tr>
+    <tr><td>6</td><td>Crémaillère (liée au bâti)</td><td>Z<sub>6</sub> = 63 dents</td></tr>
+    <tr><td>7, 8</td><td>Pignon et roue coniques (vers le rouleau)</td><td>Z<sub>7</sub> = Z<sub>8</sub> = 20 dents</td></tr>
+  </table>
+  <p class="context" style="font-size:.92rem">Module de toutes les roues dentées : m = 0,8 mm. Les roues 4, 5 et 7 sont solidaires du même arbre. Pignon-crémaillère : rayon primitif r<sub>p</sub> = m × Z / 2 et V = r<sub>p</sub> × ω (V en m/s, r<sub>p</sub> en m, ω en rad/s).</p>
+
+  <!-- Q4 -->
+  <section class="question" data-q="q4">
+    <p><span class="qn">Q4</span> — À partir de la nomenclature et du schéma cinématique, calculer le rapport de transmission r = N<sub>5/1</sub> / N<sub>3/1</sub> entre le pignon 5 et le pignon moteur 3. En déduire N<sub>5/1</sub>.</p>
+    <div class="answer">
+      <label for="r4">r =</label><input id="r4" data-k="r" inputmode="decimal" placeholder="ta valeur"><span class="unit">(sans unité, en décimal)</span>
+      <button class="btn check-btn" type="button" data-k="r">Vérifier</button>
+    </div>
+    <div class="answer">
+      <label for="n5">N<sub>5/1</sub> =</label><input id="n5" data-k="n5" inputmode="decimal" placeholder="ta valeur"><span class="unit">tr/min</span>
+      <button class="btn check-btn" type="button" data-k="n5">Vérifier</button>
+    </div>
+    <div class="tools">
+      <button class="btn ghost hint-btn" type="button">Coup de pouce</button><span class="counter hint-count"></span>
+      <button class="btn warn corr-btn" type="button">Voir la correction</button>
+    </div>
+    <div class="feedback"></div>
+    <div class="correction">
+      <h3>Correction</h3>
+      <ol>
+        <li>Le pignon moteur 3 (12 dents) entraîne la roue 4 (72 dents). La roue 4 est solidaire du pignon 5 : N<sub>5/1</sub> = N<sub>4/1</sub>.</li>
+        <li><math><mi>r</mi><mo>=</mo><mfrac><msub><mi>N</mi><mrow><mn>5</mn><mo>/</mo><mn>1</mn></mrow></msub><msub><mi>N</mi><mrow><mn>3</mn><mo>/</mo><mn>1</mn></mrow></msub></mfrac><mo>=</mo><mfrac><msub><mi>Z</mi><mn>3</mn></msub><msub><mi>Z</mi><mn>4</mn></msub></mfrac><mo>=</mo><mfrac><mn>12</mn><mn>72</mn></mfrac><mo>=</mo><mfrac><mn>1</mn><mn>6</mn></mfrac><mo>≈</mo><mn>0,167</mn></math></li>
+        <li><math><msub><mi>N</mi><mrow><mn>5</mn><mo>/</mo><mn>1</mn></mrow></msub><mo>=</mo><mi>r</mi><mo>×</mo><msub><mi>N</mi><mrow><mn>3</mn><mo>/</mo><mn>1</mn></mrow></msub><mo>=</mo><mfrac><mn>1</mn><mn>6</mn></mfrac><mo>×</mo><mn>750</mn><mo>=</mo><mn>125</mn><mtext> tr/min</mtext></math></li>
+      </ol>
+      <div class="check"><b>✓ Contrôle de bon sens :</b> r &lt; 1 et le pignon 5 tourne moins vite que le moteur (125 &lt; 750 tr/min) : c'est un réducteur, cohérent avec une petite roue (12 dents) qui entraîne une grande (72 dents).</div>
+      <p class="renvoi">Pour revoir : <a href="fiche-d2-01.html#formules">fiche D2-01, formule F1</a> · <a href="fiche-d2-01.html#controles">contrôle K1</a></p>
+    </div>
+  </section>
+
+  <!-- Q5 -->
+  <section class="question" data-q="q5">
+    <p><span class="qn">Q5</span> — Montrer que la vitesse théorique de translation du chariot par rapport au bâti vaut environ 0,13 m/s. Conclure par rapport au cahier des charges.</p>
+    <div class="answer">
+      <label for="v5">V<sub>chariot/bâti</sub> =</label><input id="v5" data-k="v" inputmode="decimal" placeholder="ta valeur"><span class="unit">m/s</span>
+      <button class="btn check-btn" type="button" data-k="v">Vérifier</button>
+    </div>
+    <div class="tools">
+      <button class="btn ghost hint-btn" type="button">Coup de pouce</button><span class="counter hint-count"></span>
+      <button class="btn warn corr-btn" type="button">Voir la correction</button>
+    </div>
+    <div class="feedback"></div>
+    <div class="correction">
+      <h3>Correction</h3>
+      <ol>
+        <li>Vitesse angulaire du pignon 5 : <math><msub><mi>ω</mi><mrow><mn>5</mn><mo>/</mo><mn>1</mn></mrow></msub><mo>=</mo><mn>125</mn><mo>×</mo><mfrac><mrow><mn>2</mn><mi>π</mi></mrow><mn>60</mn></mfrac><mo>≈</mo><mn>13,1</mn><mtext> rad/s</mtext></math></li>
+        <li>Rayon primitif du pignon 5 : <math><msub><mi>r</mi><mi mathvariant="normal">p</mi></msub><mo>=</mo><mfrac><mrow><mi>m</mi><mo>×</mo><msub><mi>Z</mi><mn>5</mn></msub></mrow><mn>2</mn></mfrac><mo>=</mo><mfrac><mrow><mn>0,8</mn><mo>×</mo><mn>25</mn></mrow><mn>2</mn></mfrac><mo>=</mo><mn>10</mn><mtext> mm</mtext><mo>=</mo><mn>0,010</mn><mtext> m</mtext></math></li>
+        <li><math><mi>V</mi><mo>=</mo><msub><mi>r</mi><mi mathvariant="normal">p</mi></msub><mo>×</mo><msub><mi>ω</mi><mrow><mn>5</mn><mo>/</mo><mn>1</mn></mrow></msub><mo>=</mo><mn>0,010</mn><mo>×</mo><mn>13,1</mn><mo>≈</mo><mn>0,131</mn><mtext> m/s</mtext></math></li>
+      </ol>
+      <div class="check"><b>✓ Contrôle et conclusion :</b> 0,13 m/s est inférieur aux 0,15 m/s exigés : avec ces engrenages, l'exigence de vitesse n'est pas respectée (écart d'environ 13 %).</div>
+      <p class="renvoi">Pour revoir : conversion tr/min → rad/s (fiche A1-03, bientôt en ligne) · pignon-crémaillère (fiche D2-04, bientôt en ligne)</p>
+    </div>
+  </section>
+
+  <h2>Ton avis (2 minutes)</h2>
+  <form class="survey" id="survey" onsubmit="return false">
+    <fieldset><legend>Quelle partie de la fiche D2-01 t'a le plus servi ?</legend>
+      <label><input type="checkbox" value="schéma bloc">schéma bloc</label><label><input type="checkbox" value="l'essentiel">l'essentiel</label><label><input type="checkbox" value="je retrouve">je retrouve</label><label><input type="checkbox" value="contrôles">contrôles de bon sens</label><label><input type="checkbox" value="pas ouverte">je ne l'ai pas ouverte</label></fieldset>
+    <fieldset><legend>Les coups de pouce étaient…</legend>
+      <label><input type="radio" name="h" value="trop vagues">trop vagues</label><label><input type="radio" name="h" value="bien dosés">bien dosés</label><label><input type="radio" name="h" value="trop précis">trop précis</label><label><input type="radio" name="h" value="pas utilisés">pas utilisés</label></fieldset>
+    <fieldset><legend>Le message après « Vérifier » t'a-t-il aidé à trouver ton erreur ?</legend>
+      <label><input type="radio" name="v" value="oui">oui</label><label><input type="radio" name="v" value="un peu">un peu</label><label><input type="radio" name="v" value="non">non</label><label><input type="radio" name="v" value="pas d'erreur">pas d'erreur</label></fieldset>
+    <fieldset><legend>Une remarque ?</legend><textarea></textarea></fieldset>
+    <button class="btn" type="button" id="copy-survey">Copier mes réponses</button><span class="copied" id="copied"></span>
+    <textarea id="survey-out" hidden></textarea>
+    <p class="counter">Coups de pouce utilisés sur la page : <b id="hint-total">0</b></p>
+  </form>
+
+</article></main>
+<footer class="note">Exercice d'après l'e3c SI n° 08 (G1SSCIN03654), version retravaillée. Version de test.</footer>
+
+<script>
+window.EXO = {
+  title: 'Exercice Boboptic Q4–Q5',
+  avatar: 'img/android_exercice.jpg',
+  penalty: '',
+  questions: {
+    q4: {
+      hints: [
+        'Sur le schéma cinématique, repère la roue que fait tourner le moteur, puis celle qui porte le pignon 5.',
+        'Les roues 4, 5 et 7 sont solidaires du même arbre : elles tournent à la même vitesse. Donc N<sub>5/1</sub> = N<sub>4/1</sub>.',
+        'Pour un engrenage, le rapport des vitesses (sortie sur entrée) est égal au nombre de dents de la roue menante divisé par celui de la roue menée.'
+      ],
+      answers: {
+        r: [
+          {v:0.1667, tol:0.03, ok:true, msg:'Juste : r = 12/72 = 1/6 ≈ 0,167. C’est un réducteur.'},
+          {v:6, tol:0.02, msg:'⚠ Contrôle K1 : tu as écrit le rapport à l’envers. Une petite roue (12 dents) qui entraîne une grande (72 dents) fait <b>ralentir</b> : r doit être inférieur à 1.'},
+          {v:0.48, tol:0.02, msg:'Le pignon 5 n’engrène pas avec le pignon moteur 3 : regarde le schéma, le pignon 3 entraîne la roue 4, qui est solidaire du pignon 5.'},
+          {v:0.3472, tol:0.02, msg:'Z<sub>5</sub> n’intervient pas ici : le pignon 5 tourne avec la roue 4 (même arbre). Le rapport ne dépend que de l’engrenage 3-4.'}
+        ],
+        n5: [
+          {v:125, tol:0.02, ok:true, msg:'Juste : N<sub>5/1</sub> = 125 tr/min. Contrôle : le pignon 5 tourne bien moins vite que le moteur (750 tr/min).'},
+          {v:4500, tol:0.02, msg:'⚠ Contrôle K1 : avec un réducteur, la sortie doit tourner <b>moins vite</b> que le moteur. Le rapport est à l’envers.'},
+          {v:360, tol:0.02, msg:'Tu as utilisé le pignon 5 dans l’engrenage : relis le schéma, c’est la roue 4 qui engrène avec le pignon moteur.'}
+        ]
+      }
+    },
+    q5: {
+      hints: [
+        'La formule V = r<sub>p</sub> × ω demande ω en rad/s : convertis d’abord les 125 tr/min (un tour = 2π rad, une minute = 60 s).',
+        'Calcule le rayon primitif du pignon 5 avec r<sub>p</sub> = m × Z<sub>5</sub> / 2, puis passe-le en mètres.',
+        'Applique V = r<sub>p</sub> × ω<sub>5/1</sub>, puis compare à 0,15 m/s.'
+      ],
+      answers: {
+        v: [
+          {v:0.131, tol:0.04, ok:true, msg:'Juste : V ≈ 0,13 m/s. N’oublie pas de conclure : c’est moins que les 0,15 m/s exigés.'},
+          {v:1.25, tol:0.02, msg:'Tu as utilisé 125 tr/min directement : la formule demande ω en <b>rad/s</b>. ⚠ Contrôle : 125 tr/min ≈ 13 rad/s (environ 10 fois moins).'},
+          {v:0.2618, tol:0.02, msg:'Tu trouves le double : tu as utilisé m × Z<sub>5</sub> (le diamètre primitif) au lieu de m × Z<sub>5</sub> / 2 (le rayon).'},
+          {v:130.9, tol:0.02, msg:'Ton résultat est 1 000 fois trop grand : le rayon doit être en <b>mètres</b> (10 mm = 0,010 m). Un chariot à 130 m/s, ce serait absurde !'},
+          {v:0.785, tol:0.02, msg:'Tu as pris la vitesse du moteur (750 tr/min) : c’est le pignon 5 qui engrène avec la crémaillère, il tourne à 125 tr/min (question Q4).'},
+          {v:0.3299, tol:0.02, msg:'Tu as pris Z<sub>6</sub> (la crémaillère) : le rayon primitif est celui du <b>pignon 5</b>, Z<sub>5</sub> = 25 dents.'}
+        ]
+      }
+    }
+  }
+};
+</script>
+<script src="exo.js"></script>
+</body>
+</html>
