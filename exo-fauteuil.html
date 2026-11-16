@@ -5,7 +5,133 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Exercice — Fauteuil roulant : couple et vitesse du moteur</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="exo.css">
+<style>
+:root{
+  --dom:#0e5a6b; --dom-l:#e3f0f2; --ink:#1b2328; --mute:#5c6b73; --line:#d5dde1; --bg:#f6f8f9;
+  --ess:#fff6d6; --ess-b:#e0b100; --ret:#e8f5ec; --ret-b:#2e8b57; --ctl:#fdeee6; --ctl-b:#d0602a;
+  --ok:#e8f5ec; --ok-b:#2e8b57; --ko:#fdeee6; --ko-b:#d0602a;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.55}
+a{color:var(--dom)}
+.code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.8rem}
+math{font-size:1.1em}
+
+.top{background:var(--dom);color:#fff}
+.top-in{max-width:900px;margin:0 auto;padding:.6rem 1.25rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;font-size:.88rem}
+.top a{color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.4)}
+.brand{font-weight:700}
+main{max-width:900px;margin:0 auto;padding:1.4rem 1.25rem 3rem}
+.sheet{background:#fff;border:1px solid var(--line);border-radius:12px;padding:1.8rem 2rem}
+@media (max-width:640px){.sheet{padding:1.2rem 1rem}}
+
+.hero{display:flex;gap:1.2rem;align-items:center;margin-bottom:1rem}
+.avatar{flex:none;width:92px;height:92px;border-radius:50%;object-fit:cover;object-position:center 20%;border:3px solid var(--dom);background:#fff}
+.hero h1{font-size:1.65rem;line-height:1.2;margin:.15rem 0}
+.badges{display:flex;gap:.45rem;flex-wrap:wrap}
+.badge{border-radius:999px;padding:.1rem .6rem;font-size:.76rem;font-weight:600;border:1px solid var(--line);color:var(--mute);background:#fff}
+.badge.id{background:var(--dom);border-color:var(--dom);color:#fff}
+.badge.type{color:var(--dom);border-color:var(--dom)}
+
+h2{font-size:1.15rem;margin:1.8rem 0 .6rem;padding-bottom:.3rem;border-bottom:2px solid var(--dom-l)}
+.context{color:#33424a}
+table.data{border-collapse:collapse;font-size:.92rem;margin:.6rem 0;width:100%}
+table.data th,table.data td{border:1px solid var(--line);padding:.35rem .6rem;text-align:left}
+table.data th{background:var(--dom-l);color:var(--dom);font-weight:600}
+figure{margin:.8rem 0}
+figure img{max-width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:6px}
+figcaption{font-size:.82rem;color:var(--mute);margin-top:.3rem}
+.figs{display:grid;grid-template-columns:1.3fr 1fr;gap:1rem;align-items:start}
+@media (max-width:680px){.figs{grid-template-columns:1fr}}
+
+.question{border:1px solid var(--dom);border-left:6px solid var(--dom);border-radius:10px;padding:1rem 1.2rem;margin:1.2rem 0;background:#fbfdfd}
+.question .qn{font-weight:700;color:var(--dom)}
+.answer{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-top:.8rem}
+.answer label{font-size:.9rem;font-weight:600}
+.answer input{font:inherit;width:9rem;padding:.35rem .5rem;border:1px solid var(--line);border-radius:6px}
+.answer .unit{font-size:.9rem;color:var(--mute)}
+.btn{font:inherit;font-size:.86rem;font-weight:600;padding:.4rem .85rem;border-radius:7px;border:1px solid var(--dom);background:var(--dom);color:#fff;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--dom)}
+.btn.warn{background:#fff;color:var(--ctl-b);border-color:var(--ctl-b)}
+.tools{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem;align-items:center}
+.counter{font-size:.82rem;color:var(--mute)}
+
+.bubble{display:flex;gap:.8rem;align-items:flex-start;margin-top:.8rem}
+.bubble img{flex:none;width:52px;height:52px;border-radius:50%;object-fit:cover;object-position:center 20%;border:2px solid var(--dom)}
+.bubble .txt{position:relative;background:var(--dom-l);border-radius:10px;padding:.6rem .9rem;font-size:.95rem}
+.bubble .txt::before{content:"";position:absolute;left:-8px;top:16px;border:8px solid transparent;border-right-color:var(--dom-l);border-left:0}
+.bubble.ok .txt{background:var(--ok)}.bubble.ok .txt::before{border-right-color:var(--ok)}
+.bubble.ko .txt{background:var(--ko)}.bubble.ko .txt::before{border-right-color:var(--ko)}
+.bubble .who{display:block;font-size:.72rem;font-weight:700;color:var(--dom);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.1rem}
+
+.correction{display:none;border:1px solid var(--line);border-left:6px solid var(--ret-b);background:var(--ret);border-radius:10px;padding:.9rem 1.1rem;margin-top:.8rem}
+.correction.open{display:block}
+.correction h3{margin:.1rem 0 .4rem;font-size:1rem;color:var(--ret-b)}
+.correction ol{margin:.3rem 0;padding-left:1.2rem}
+.check{background:#fff;border:1px solid var(--line);border-radius:6px;padding:.5rem .8rem;margin-top:.6rem;font-size:.93rem}
+.check b{color:var(--ret-b)}
+.tri{width:1rem;height:1rem;vertical-align:-2px}
+.renvoi{font-size:.88rem;margin-top:.5rem}
+
+.survey{background:var(--ess);border:1px solid var(--line);border-left:6px solid var(--ess-b);border-radius:10px;padding:1rem 1.2rem}
+.survey fieldset{border:none;margin:0 0 .7rem;padding:0}
+.survey legend{font-weight:600;font-size:.93rem;margin-bottom:.2rem}
+.survey label{display:inline-flex;gap:.3rem;align-items:center;margin:.1rem 1rem .1rem 0;font-size:.9rem}
+.survey textarea{width:100%;font:inherit;font-size:.9rem;border:1px solid var(--line);border-radius:6px;padding:.4rem .5rem;min-height:3.2rem}
+.copied{font-size:.85rem;color:var(--ret-b);margin-left:.5rem}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}
+.card{display:flex;gap:.8rem;align-items:center;border:1px solid var(--line);border-radius:12px;padding:1rem;text-decoration:none;color:var(--ink);background:#fff}
+.card:hover{border-color:var(--dom)}
+.card img{width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:center 20%;border:2px solid var(--dom)}
+.card b{display:block;color:var(--dom)}
+.card span{font-size:.86rem;color:var(--mute)}
+footer.note{max-width:900px;margin:0 auto;padding:0 1.25rem 2rem;font-size:.8rem;color:var(--mute)}
+@media print{.top,.tools,.answer,.survey,.bubble{display:none!important}.correction{display:block!important}body{background:#fff}.sheet{border:none}}
+
+/* ===== v2 : panneau de dialogue à côté de l'exercice ===== */
+.layout{max-width:1320px;margin:0 auto;padding:1.4rem 1.25rem 3rem;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:1.2rem;align-items:start}
+.layout main{max-width:none;margin:0;padding:0}
+.chat{position:sticky;top:1rem;height:calc(100vh - 2rem);display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.chat-head{display:flex;gap:.7rem;align-items:center;padding:.7rem .9rem;background:var(--dom);color:#fff}
+.chat-head img{width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:center 20%;border:2px solid #fff}
+.chat-head b{display:block;font-size:.95rem}.chat-head span{font-size:.76rem;opacity:.85}
+.chat-head .toggle{margin-left:auto;display:none;background:none;border:1px solid rgba(255,255,255,.6);color:#fff;border-radius:6px;font:inherit;font-size:.8rem;padding:.15rem .5rem;cursor:pointer}
+.chat-log{flex:1;overflow-y:auto;padding:.8rem;display:flex;flex-direction:column;gap:.6rem;background:#fafbfc}
+.chat-empty{font-size:.88rem;color:var(--mute);text-align:center;margin:auto 1rem}
+.msg{max-width:92%;border-radius:12px;padding:.55rem .8rem;font-size:.92rem;line-height:1.45}
+.msg.bot{background:var(--dom-l);align-self:flex-start;border-top-left-radius:3px}
+.msg.bot.ok{background:var(--ok)}.msg.bot.ko{background:var(--ko)}
+.msg.me{background:var(--dom);color:#fff;align-self:flex-end;border-top-right-radius:3px}
+.msg .tag{display:block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--dom);margin-bottom:.15rem}
+.msg.ok .tag{color:var(--ok-b)}.msg.ko .tag{color:var(--ko-b)}
+.choices{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.5rem}
+.choices button{font:inherit;font-size:.84rem;padding:.3rem .65rem;border-radius:999px;border:1px solid var(--dom);background:#fff;color:var(--dom);cursor:pointer}
+.choices button.act{border-style:dashed}
+.choices button:disabled{opacity:.45;cursor:default}
+.chat-foot{border-top:1px solid var(--line);padding:.5rem .8rem;font-size:.78rem;color:var(--mute);display:flex;justify-content:space-between;gap:.5rem}
+.chat-foot button{background:none;border:none;color:var(--mute);text-decoration:underline;cursor:pointer;font:inherit;font-size:.78rem}
+@media (max-width:1100px){
+  .layout{grid-template-columns:1fr}
+  .chat{position:fixed;left:.5rem;right:.5rem;bottom:.5rem;top:auto;height:55vh;z-index:40;box-shadow:0 6px 30px rgba(0,0,0,.25)}
+  .chat.min{height:auto}.chat.min .chat-log,.chat.min .chat-foot{display:none}
+  .chat-head .toggle{display:inline-block}
+  .layout main{padding-bottom:58vh}
+}
+.btn.fiche{background:#fff;color:#6a4fa3;border-color:#6a4fa3}
+
+/* fiche en surimpression */
+.overlay{position:fixed;inset:0;background:rgba(20,30,35,.55);z-index:60;display:none;align-items:stretch;justify-content:flex-end}
+.overlay.open{display:flex}
+.overlay .pane{width:min(900px,100%);background:#fff;display:flex;flex-direction:column}
+.overlay .bar{display:flex;align-items:center;gap:.6rem;padding:.5rem .8rem;background:#6a4fa3;color:#fff;font-size:.9rem}
+.overlay .bar b{flex:1}
+.overlay .bar button{font:inherit;font-size:.85rem;background:#fff;color:#6a4fa3;border:none;border-radius:6px;padding:.3rem .7rem;cursor:pointer;font-weight:600}
+.overlay iframe{flex:1;border:none;width:100%}
+@media print{.chat,.overlay{display:none!important}.layout{display:block}}
+
+</style>
 </head>
 <body>
 <header class="top"><div class="top-in"><span class="brand">SI 1re–Tle</span><a href="index.html">Accueil du test</a><a href="fiche-d2-01.html">Fiche D2-01</a></div></header>
@@ -233,6 +359,192 @@ window.EXO = {
   }
 };
 </script>
-<script src="exo.js"></script>
+<script>
+// Moteur commun des pages d'exercice (version 2)
+// - panneau de dialogue à côté de l'exercice (l'androïde questionne l'élève)
+// - diagnostic par zones d'écart (rapport réponse / bonne réponse), puis arbre de questions oui / non
+// - fiche ouverte en surimpression : l'élève ne quitte pas l'exercice
+// - sauvegarde des réponses et du dialogue dans le navigateur
+(function(){
+  const C = window.EXO; if(!C) return;
+  const KEY = 'exo:' + location.pathname;
+  const tri = '<svg viewBox="0 0 24 24" style="width:1em;height:1em;vertical-align:-2px" aria-hidden="true"><path d="M12 2.5 1.5 21h21z" fill="#d0602a"/><rect x="11" y="9" width="2" height="6.5" fill="#fff"/><rect x="11" y="17" width="2" height="2" fill="#fff"/></svg>';
+  const ACT = { fiche:'Voir la fiche', fichefull:'Retravailler toute la fiche', exemple:'Refaire l’exemple de la fiche', hint:'Un coup de pouce', retry:'Je corrige ma réponse', corr:'Voir la correction' };
+  const state = { inputs:{}, used:{}, tries:{}, total:0, log:'' };
+  let saving = true;
+
+  // ---------- mise en page : exercice + panneau ----------
+  const main = document.querySelector('main');
+  const wrap = document.createElement('div'); wrap.className = 'layout';
+  main.parentNode.insertBefore(wrap, main); wrap.appendChild(main);
+  const chat = document.createElement('aside'); chat.className = 'chat';
+  chat.innerHTML = '<div class="chat-head"><img src="' + C.avatar + '" alt=""><div><b>' + (C.botName || 'Ton assistant SI') + '</b><span>Je t’aide à trouver ton erreur, sans te donner la réponse.</span></div><button class="toggle" type="button">Réduire</button></div>'
+    + '<div class="chat-log"><p class="chat-empty">Propose une réponse et clique sur « Vérifier » : je te pose des questions pour t’aider à avancer.</p></div>'
+    + '<div class="chat-foot"><span>Tes réponses sont gardées sur cet appareil.</span><button type="button" class="reset">Tout effacer</button></div>';
+  wrap.appendChild(chat);
+  const small = window.matchMedia('(max-width:1100px)');
+  if(small.matches){ chat.classList.add('min'); }
+  const log = chat.querySelector('.chat-log');
+  chat.querySelector('.toggle').addEventListener('click', e => { chat.classList.toggle('min'); e.target.textContent = chat.classList.contains('min') ? 'Ouvrir' : 'Réduire'; });
+  chat.querySelector('.reset').addEventListener('click', () => { try{ localStorage.removeItem(KEY); }catch(e){} saving = false; location.reload(); });
+
+  // ---------- fiche en surimpression ----------
+  const ov = document.createElement('div'); ov.className = 'overlay';
+  ov.innerHTML = '<div class="pane"><div class="bar"><b>Fiche</b><button type="button" class="full">Toute la fiche</button><button type="button" class="close">Revenir à l’exercice</button></div><iframe title="Fiche"></iframe></div>';
+  document.body.appendChild(ov);
+  const frame = ov.querySelector('iframe');
+  let ficheBase = '';
+  function openFiche(url){ ficheBase = url.split('#')[0]; frame.src = url; ov.querySelector('b').textContent = C.ficheTitle || 'Fiche'; ov.classList.add('open'); }
+  ov.querySelector('.close').addEventListener('click', () => ov.classList.remove('open'));
+  ov.querySelector('.full').addEventListener('click', () => { frame.src = ficheBase + '#top'; });
+  ov.addEventListener('click', e => { if(e.target === ov) ov.classList.remove('open'); });
+
+  // ---------- messages ----------
+  function fmt(v){ return (Math.round(v * 1000) / 1000).toLocaleString('fr-FR'); }
+  function save(){ if(!saving) return; state.log = log.innerHTML; try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+  function scroll(){ log.scrollTop = log.scrollHeight; }
+  function clearEmpty(){ const e = log.querySelector('.chat-empty'); if(e) e.remove(); }
+  function disableOld(){ log.querySelectorAll('.choices button').forEach(b => b.disabled = true); }
+  function me(text){ clearEmpty(); const d = document.createElement('div'); d.className = 'msg me'; d.innerHTML = text; log.appendChild(d); scroll(); }
+  function bot(q, html, kind, tag, choices, actions){
+    clearEmpty(); disableOld();
+    const d = document.createElement('div'); d.className = 'msg bot' + (kind ? ' ' + kind : '');
+    d.innerHTML = (tag ? '<span class="tag">' + tag + '</span>' : '') + html.replace(/⚠/g, tri);
+    const all = (choices || []).map(c => ({label:c.label, next:c.next})).concat((actions || []).map(a => ({label:ACT[a], act:a})));
+    if(all.length){
+      const box = document.createElement('div'); box.className = 'choices';
+      all.forEach(c => { const b = document.createElement('button'); b.type = 'button'; b.textContent = c.label; if(c.act) b.className = 'act';
+        b.dataset.q = q; if(c.next) b.dataset.next = c.next; if(c.act) b.dataset.act = c.act; box.appendChild(b); });
+      d.appendChild(box);
+    }
+    log.appendChild(d);
+    if(chat.classList.contains('min')){ chat.classList.remove('min'); chat.querySelector('.toggle').textContent = 'Réduire'; }
+    scroll(); save();
+  }
+  log.addEventListener('click', e => {
+    const b = e.target.closest('.choices button'); if(!b || b.disabled) return;
+    const q = b.dataset.q; me(b.textContent);
+    if(b.dataset.next) node(q, b.dataset.next);
+    else action(q, b.dataset.act);
+  });
+
+  // ---------- actions ----------
+  const Q = {};
+  function action(q, a){
+    const cfg = C.questions[q], el = Q[q];
+    if(a === 'fiche') openFiche(C.fiche + (cfg.fiche || ''));
+    else if(a === 'fichefull') { openFiche(C.fiche + '#top'); bot(q, 'Prends le temps de relire la fiche, surtout « Je retrouve la formule », puis refais l’exemple de la fiche. Reviens ensuite à l’exercice : tes réponses sont gardées.', '', '', [], ['retry']); }
+    else if(a === 'exemple') openFiche(C.fiche + '#exemple');
+    else if(a === 'hint') el.hint();
+    else if(a === 'corr') el.corr(true);
+    else if(a === 'retry') { const i = el.root.querySelector('input'); if(i){ i.focus(); i.select(); } bot(q, 'D’accord. Corrige ta valeur, puis clique à nouveau sur « Vérifier ».', '', ''); }
+  }
+  let lastV = null;
+  const pending = {};
+  function node(q, id){
+    const cfg = C.questions[q], n = cfg.nodes[id]; if(!n){ return; }
+    const say = n.say.replace(/\{v\}/g, lastV === null ? '' : fmt(lastV));
+    bot(q, say, n.kind || '', n.tag || '', n.choices, n.actions);
+    // le point « as-tu compris ? » attend la fin de la branche en cours
+    if(pending[q] && !(n.choices && n.choices.length) && id !== cfg.comprendre){ pending[q] = false; node(q, cfg.comprendre); }
+  }
+
+  // ---------- questions ----------
+  function num(s){ s = (s || '').trim().replace(/\s/g,'').replace(',', '.'); return s === '' ? NaN : Number(s); }
+  document.querySelectorAll('.question').forEach(root => {
+    const q = root.dataset.q, cfg = C.questions[q]; if(!cfg) return;
+    state.used[q] = state.used[q] || 0; state.tries[q] = state.tries[q] || 0;
+    const tools = root.querySelector('.tools');
+    const hb = root.querySelector('.hint-btn'), hc = root.querySelector('.hint-count');
+    const cb = root.querySelector('.corr-btn'), corr = root.querySelector('.correction');
+    // bouton fiche entre coup de pouce et correction
+    if(cfg.fiche !== undefined){
+      const fb = document.createElement('button'); fb.type = 'button'; fb.className = 'btn fiche'; fb.textContent = 'Voir la fiche';
+      fb.addEventListener('click', () => action(q, 'fiche'));
+      tools.insertBefore(fb, cb);
+    }
+    const api = { root };
+    function updH(){ hc.textContent = state.used[q] + ' / ' + cfg.hints.length + ' coup(s) de pouce utilisé(s)'; hb.disabled = state.used[q] >= cfg.hints.length; if(hb.disabled) hb.textContent = 'Plus de coup de pouce'; const t = document.getElementById('hint-total'); if(t) t.textContent = state.total; }
+    api.hint = () => {
+      if(state.used[q] >= cfg.hints.length){ bot(q, 'Tu as utilisé tous les coups de pouce. Tu peux relire la fiche ou regarder la correction.', '', '', [], ['fiche','corr']); return; }
+      const i = state.used[q]; state.used[q]++; state.total++; updH();
+      bot(q, cfg.hints[i], '', 'Coup de pouce ' + (i + 1) + (C.penalty ? ' (' + C.penalty + ')' : ''), [], ['retry','fiche']);
+    };
+    hb.addEventListener('click', api.hint);
+    api.corr = (force) => {
+      if(!corr.classList.contains('open') && state.tries[q] === 0 && !force && !cb.dataset.warned){
+        cb.dataset.warned = '1';
+        bot(q, 'Tu n’as encore proposé aucune réponse. Essaie au moins une fois, ou prends un coup de pouce : c’est en cherchant qu’on retient. Clique à nouveau pour voir quand même la correction.', 'ko', 'Avant la correction', [], ['hint','fiche']);
+        return;
+      }
+      corr.classList.toggle('open'); cb.textContent = corr.classList.contains('open') ? 'Masquer la correction' : 'Voir la correction';
+      if(corr.classList.contains('open')) corr.scrollIntoView({behavior:'smooth', block:'start'});
+    };
+    cb.addEventListener('click', () => api.corr(false));
+
+    root.querySelectorAll('.check-btn').forEach(btn => btn.addEventListener('click', () => {
+      const k = btn.dataset.k || 'main', spec = cfg.answers[k];
+      const inp = root.querySelector('input[data-k="' + k + '"]');
+      const v = num(inp.value); state.inputs[inp.id] = inp.value;
+      const lab = (root.querySelector('label[for="' + inp.id + '"]') || {}).innerHTML || '';
+      if(isNaN(v)){ bot(q, 'Écris d’abord ta valeur numérique, sans l’unité.', 'ko', ''); return; }
+      me(lab + ' ' + inp.value + ' ' + ((inp.parentNode.querySelector('.unit') || {}).innerHTML || ''));
+      state.tries[q]++; lastV = v;
+      let good = false;
+      if(Array.isArray(spec)){                       // ancien format : liste de valeurs
+        let best = null;
+        spec.forEach(a => { const e = Math.abs(v - a.v) / Math.abs(a.v); if(e <= (a.tol || 0.03) && (!best || e < best.e)) best = {a, e}; });
+        if(best && best.a.ok){ good = true; bot(q, best.a.msg, 'ok', 'Vérification'); }
+        else if(best) bot(q, best.a.msg, 'ko', 'Vérification', [], ['retry','hint','fiche']);
+        else bot(q, cfg.unknown || 'Ce n’est pas la valeur attendue. Fais d’abord le contrôle d’ordre de grandeur, puis demande un coup de pouce si tu bloques.', 'ko', 'Vérification', [], ['retry','hint','fiche']);
+      } else {                                        // nouveau format : zones d'écart + arbre
+        const rho = v / spec.expected;
+        if(Math.abs(rho - 1) <= (spec.tol || 0.03)){ good = true; node(q, spec.ok); }
+        else {
+          const z = spec.zones.find(z => rho >= z.min && rho < z.max);
+          node(q, z ? z.node : spec.other);
+        }
+      }
+      if(!good && state.tries[q] >= 3 && !root.dataset.asked && cfg.comprendre){
+        root.dataset.asked = '1';
+        const last = log.lastElementChild;
+        if(last && last.querySelector('.choices button:not(.act)')) pending[q] = true;   // une branche est en cours
+        else node(q, cfg.comprendre);
+      }
+      save();
+    }));
+    root.querySelectorAll('input').forEach(i => i.addEventListener('input', () => { state.inputs[i.id] = i.value; save(); }));
+    api.updH = updH; Q[q] = api;
+  });
+
+  // ---------- restauration ----------
+  try{
+    const s = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if(s){
+      Object.assign(state, s);
+      Object.entries(state.inputs || {}).forEach(([id, v]) => { const i = document.getElementById(id); if(i) i.value = v; });
+      if(state.log){ log.innerHTML = state.log; disableOld(); const d = document.createElement('div'); d.className = 'msg bot'; d.innerHTML = 'Tu reprends là où tu t’étais arrêté : tes réponses sont revenues.'; log.appendChild(d); scroll(); }
+    }
+  }catch(e){}
+  Object.values(Q).forEach(a => a.updH());
+
+  // ---------- questionnaire ----------
+  const copy = document.getElementById('copy-survey');
+  if(copy) copy.addEventListener('click', () => {
+    const f = document.getElementById('survey');
+    let out = C.title + '\nCoups de pouce utilisés : ' + state.total + '\n';
+    f.querySelectorAll('fieldset').forEach(fs => {
+      const lg = fs.querySelector('legend').textContent;
+      const ch = [...fs.querySelectorAll('input:checked')].map(i => i.value).join(', ');
+      const ta = fs.querySelector('textarea');
+      out += '- ' + lg + ' ' + (ch || (ta ? ta.value.trim() : '') || '(pas de réponse)') + '\n';
+    });
+    const done = () => { document.getElementById('copied').textContent = 'Copié : colle-le dans Classroom.'; };
+    const manual = t => { const ta = document.getElementById('survey-out'); ta.hidden = false; ta.value = t; ta.select(); document.getElementById('copied').textContent = 'Sélectionne et copie ce texte.'; };
+    try { navigator.clipboard.writeText(out).then(done, () => manual(out)); } catch(e){ manual(out); }
+  });
+})();
+
+</script>
 </body>
 </html>
