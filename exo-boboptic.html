@@ -168,7 +168,7 @@ footer.note{max-width:900px;margin:0 auto;padding:0 1.25rem 2rem;font-size:.8rem
   <section class="question" data-q="q4">
     <p><span class="qn">Q4</span> — À partir de la nomenclature et du schéma cinématique, calculer le rapport de transmission r = N<sub>5/1</sub> / N<sub>3/1</sub> entre le pignon 5 et le pignon moteur 3. En déduire N<sub>5/1</sub>.</p>
     <div class="answer">
-      <label for="r4">r =</label><input id="r4" data-k="r" inputmode="decimal" placeholder="ta valeur"><span class="unit">(sans unité, en décimal)</span>
+      <label for="r4">r =</label><input id="r4" data-k="r" inputmode="decimal" placeholder="ta valeur"><span class="unit">(sans unité : décimal ou fraction)</span>
       <button class="btn check-btn" type="button" data-k="r">Vérifier</button>
     </div>
     <div class="answer">
@@ -224,6 +224,8 @@ footer.note{max-width:900px;margin:0 auto;padding:0 1.25rem 2rem;font-size:.8rem
       <label><input type="radio" name="h" value="trop vagues">trop vagues</label><label><input type="radio" name="h" value="bien dosés">bien dosés</label><label><input type="radio" name="h" value="trop précis">trop précis</label><label><input type="radio" name="h" value="pas utilisés">pas utilisés</label></fieldset>
     <fieldset><legend>Le message après « Vérifier » t'a-t-il aidé à trouver ton erreur ?</legend>
       <label><input type="radio" name="v" value="oui">oui</label><label><input type="radio" name="v" value="un peu">un peu</label><label><input type="radio" name="v" value="non">non</label><label><input type="radio" name="v" value="pas d'erreur">pas d'erreur</label></fieldset>
+    <fieldset><legend>Entre les deux exercices, lequel t'a le plus aidé à trouver ton erreur par toi-même ?</legend>
+      <label><input type="radio" name="cmp" value="Fauteuil">Fauteuil</label><label><input type="radio" name="cmp" value="Boboptic">Boboptic</label><label><input type="radio" name="cmp" value="les deux pareil">les deux pareil</label><label><input type="radio" name="cmp" value="un seul exercice fait">je n'ai fait qu'un exercice</label></fieldset>
     <fieldset><legend>Une remarque ?</legend><textarea></textarea></fieldset>
     <button class="btn" type="button" id="copy-survey">Copier mes réponses</button><span class="copied" id="copied"></span>
     <textarea id="survey-out" hidden></textarea>
@@ -388,7 +390,8 @@ window.EXO = {
   }
 
   // ---------- questions ----------
-  function num(s){ s = (s || '').trim().replace(/\s/g,'').replace(',', '.'); return s === '' ? NaN : Number(s); }
+  function num(s){ s = (s || '').trim().replace(/\s/g,'').replace(/,/g, '.'); if(s === '') return NaN;
+    const m = s.match(/^(-?\d*\.?\d+)\/(-?\d*\.?\d+)$/); return m ? Number(m[1]) / Number(m[2]) : Number(s); }   // v3 : fractions acceptées (1/6)
   document.querySelectorAll('.question').forEach(root => {
     const q = root.dataset.q, cfg = C.questions[q]; if(!cfg) return;
     state.used[q] = state.used[q] || 0; state.tries[q] = state.tries[q] || 0;
