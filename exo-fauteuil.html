@@ -148,6 +148,41 @@ table.data tr.hl td{background:#fde2e2}
   body.print-bilan .layout{display:block;padding:0}
 }
 
+/* ===== v4 ===== */
+/* valeur demandée par l'assistant, dans le panneau */
+.ask{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin-top:.5rem;background:#fff;border:1px dashed var(--dom);border-radius:8px;padding:.4rem .5rem}
+.ask label{font-weight:600;font-size:.88rem}
+.ask input{font:inherit;font-size:.9rem;width:6.5rem;padding:.25rem .4rem;border:1px solid var(--line);border-radius:6px}
+.ask span{font-size:.85rem;color:var(--mute)}
+.ask button{font:inherit;font-size:.84rem;font-weight:600;padding:.25rem .7rem;border-radius:999px;border:1px solid var(--dom);background:var(--dom);color:#fff;cursor:pointer}
+.ask input:disabled,.ask button:disabled{opacity:.5;cursor:default}
+/* zoom sur les figures */
+figure{position:relative}
+img.zoomable{cursor:zoom-in}
+.zhint{position:absolute;right:.4rem;top:.4rem;font:inherit;font-size:.78rem;font-weight:600;background:rgba(255,255,255,.92);color:var(--dom);border:1px solid var(--dom);border-radius:999px;padding:.1rem .55rem;cursor:pointer}
+.zoom{position:fixed;inset:0;z-index:70;background:rgba(15,22,26,.92);display:none;flex-direction:column}
+.zoom.open{display:flex}
+.zbar{display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;background:var(--dom);color:#fff;font-size:.9rem}
+.zbar b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zbar button{font:inherit;font-size:.9rem;font-weight:600;min-width:2.2rem;background:#fff;color:var(--dom);border:none;border-radius:6px;padding:.3rem .6rem;cursor:pointer}
+.zview{flex:1;overflow:auto;padding:8px;cursor:grab;touch-action:pan-x pan-y pinch-zoom}
+.zview.drag{cursor:grabbing}
+.zview img{display:block;margin:0 auto;max-width:none;background:#fff;border-radius:4px;user-select:none;-webkit-user-drag:none}
+.zhelp{margin:0;padding:.35rem .8rem;color:#cfd8dc;font-size:.78rem;text-align:center}
+figure.hl{outline-offset:4px}
+/* mots du lexique : définition au survol (ou au toucher) */
+.lex{font-style:normal;border-bottom:1px dashed var(--dom);cursor:help;position:relative;color:inherit}
+.lex:hover::after,.lex:focus::after{content:attr(data-def);position:absolute;left:0;top:1.5em;z-index:30;width:min(320px,80vw);background:#fff;color:var(--ink);border:1px solid var(--dom);border-radius:8px;padding:.45rem .6rem;font-size:.84rem;font-weight:400;line-height:1.4;box-shadow:0 4px 16px rgba(0,0,0,.15);white-space:normal}
+.lexique{background:var(--dom-l);border-radius:8px;padding:.5rem .8rem;margin:.6rem 0;font-size:.9rem}
+.lexique summary{cursor:pointer;font-weight:600;color:var(--dom)}
+.lexique dl{margin:.4rem 0 0}.lexique dt{font-weight:700;margin-top:.35rem}.lexique dd{margin:0 0 0 .2rem}
+@media print{.zoom,.zhint{display:none!important}}
+/* téléphone : rien ne doit dépasser de l'écran */
+.layout main,.sheet{min-width:0}
+@media (max-width:1100px){.layout{grid-template-columns:minmax(0,1fr)}}
+table.data{table-layout:auto;word-break:normal;overflow-wrap:anywhere}
+.bilan{overflow-x:auto}
+
 </style>
 </head>
 <body>
@@ -257,7 +292,7 @@ table.data tr.hl td{background:#fde2e2}
   </form>
 
 </article></main>
-<footer class="note">Exercice d'après l'évaluation type bac de terminale (sujet « fauteuil roulant »). Version de test 3.</footer>
+<footer class="note">Exercice d'après l'évaluation type bac de terminale (sujet « fauteuil roulant »). Version de test 4.</footer>
 
 <script>
 (function(){
@@ -305,6 +340,15 @@ const EWR = [
   {id:'trWx', p:'cv',  f:1/K,   start:'trW',  nature:'trW_n',   label:'conversion rad/s ↔ tr/min en trop', point:'V = ω × R donne ω en rad/s', ref:A103}
 ];
 const up = (list, a) => list.map(e => Object.assign({}, e, {up:a}));
+// valeurs intermédiaires demandées par l'assistant (jamais données)
+const CROUE = 385 / 2 * 0.305;                 // couple à une roue
+const ECR = E110.filter(e => ['roues','ray','mm'].includes(e.p));
+const ECM0 = [
+  {id:'c0rO', p:'r',   f:30,     start:'c0_r',   nature:'rO_nat', label:'C<sub>m</sub> sans pertes : réducteur non traversé', point:'traverser le réducteur : C<sub>m</sub> = C<sub>roue</sub> × r / η', ref:D201('formule F4, je retrouve', '#formules')},
+  {id:'c0rE', p:'r',   f:900,    start:'c0_r',   nature:'rE_nat', label:'C<sub>m</sub> sans pertes : rapport de réduction à l’envers', point:'sens du rapport : le couple monte quand la vitesse baisse', ref:D201('contrôle K2', '#controles')},
+  {id:'c0eta',p:'eta', f:1/0.95, start:'c0_eta', nature:'c0_eta', label:'rendement utilisé dans le cas sans pertes', point:'sans pertes : η = 1'},
+  {id:'c0etm',p:'eta', f:0.95,   start:'c0_eta', nature:'c0_eta', label:'rendement utilisé dans le cas sans pertes', point:'sans pertes : η = 1'}
+].concat(ECR);
 const EWM = [
   {id:'rM',   p:'r',   f:1/900, start:'rW',   nature:'rW_nat', label:'rapport de réduction à l’envers (× r au lieu de ÷ r)', point:'sens du rapport : r = ω<sub>roue</sub> / ω<sub>m</sub>, le moteur tourne plus vite', ref:D201('contrôle K1', '#controles')},
   {id:'rOw',  p:'r',   f:1/30,  start:'rW',   nature:'rW_nat', label:'réducteur oublié', point:'sens du rapport : r = ω<sub>roue</sub> / ω<sub>m</sub>, le moteur tourne plus vite', ref:D201('contrôle K1', '#controles')},
@@ -344,27 +388,53 @@ window.EXO = {
         'Isole le couple recherché C<sub>m</sub>, puis fais l’application numérique.'
       ],
       answers: { main: {
-        expected: CM, tol: 0.03, unit: 'N·m', ok: 'ok', lost: 'perdu', errors: E110
-      }},
+        expected: CM, name: 'C<sub>m</sub>', unit: 'N·m', ok: 'ok', lost: 'perdu', errors: E110
+      },
+        croue: {hidden: true, expected: CROUE, name: 'C<sub>roue</sub>', unit: 'N·m', ok: 'croue_ok', lost: 'croue_lost', errors: ECR},
+        cm0:   {hidden: true, expected: CROUE / 30, name: 'C<sub>m</sub> sans pertes', unit: 'N·m', ok: 'cm0_ok', lost: 'cm0_lost', errors: ECM0}
+      },
+      words: [
+        {w:'couple en sortie d’un moteur', say:'C’est le couple C<sub>m</sub> que fournit l’arbre <b>du moteur</b>, à l’entrée du réducteur : pas celui de la roue.', hl:'d-moteur'},
+        {w:'action tangentielle T<sub>B</sub>', say:'C’est la force que le sol exerce sur les roues, tangente à la roue au point de contact : c’est elle qui fait avancer le fauteuil. Multipliée par un bras de levier, elle donne un couple.', hl:'d-sol'},
+        {w:'sur les deux roues', say:'T<sub>B</sub> est le total pour les deux roues motrices : chaque roue n’en reçoit qu’une partie.', hl:'d-sol'},
+        {w:'un des deux moteurs', say:'Chaque roue a son propre motoréducteur : on fait le calcul pour une seule roue et un seul moteur.', hl:'d-red'}
+      ],
+      notion: 'Bonne idée : la fiche D2-01 montre comment un couple traverse un réducteur (formule F4 et « Je retrouve la formule »).',
       comprendre: 'comp',
       nodes: Object.assign({
-        ok:   {kind:'ok', tag:'Vérification', say:'Juste ({v} N·m ; valeur précise : 2,06 N·m). ✓ Contrôle : le couple du moteur est bien plus petit que celui de la roue, et un peu plus grand que le cas sans pertes (1,96 N·m). Dis-moi : comment as-tu obtenu la formule ?',
+        ok:   {kind:'ok', tag:'Vérification', say:'Juste : C<sub>m</sub> ≈ 2,06 N·m (ta valeur : {v} N·m). ✓ Contrôle : C<sub>m</sub> est bien plus petit que le couple à une roue (C<sub>roue</sub> ≈ 58,7 N·m), et un peu plus grand que sans pertes (C<sub>roue</sub> × r ≈ 1,96 N·m). Dis-moi : comment as-tu obtenu la formule ?',
                choices:[{label:'Je l’ai retrouvée par les puissances', next:'ok_dem'},{label:'Je l’ai appliquée de mémoire', next:'ok_mem'}]},
         ok_dem:{kind:'ok', say:'Parfait : c’est la meilleure méthode. Même si tu oublies la formule le jour du bac, tu sauras la retrouver.'},
         ok_mem:{say:'Bien. Essaie quand même de la redémontrer une fois sur ta feuille, à partir des puissances : une fois faite, tu n’as plus besoin de l’apprendre par cœur.', actions:['fiche#formules']},
 
-        // rendement oublié ou mal placé (valeur un peu faible)
-        eta:  {say:'Sans pertes, le moteur devrait fournir 58,7 / 30 ≈ 1,96 N·m. Avec les pertes du réducteur, doit-il fournir plus ou moins que 1,96 N·m ?',
-               choices:[{label:'Plus', next:'eta_plus'},{label:'Moins', next:'eta_moins'},{label:'Je ne sais pas', next:'eta_ns'}]},
-        eta_plus:{say:'Exactement : le moteur doit compenser les pertes. Or ton résultat ({v} N·m) n’est pas plus grand que 1,96 N·m. D’où vient l’erreur, as-tu une idée ?',
+        // rendement oublié ou mal placé (valeur un peu faible) : on fait calculer à l'élève SA valeur sans pertes
+        eta:  {say:'Commençons par le cas sans pertes. Si le réducteur n’avait aucune perte (η = 1), quel couple C<sub>m</sub> le moteur devrait-il fournir ? Calcule-le à partir de ton couple à une roue C<sub>roue</sub>, puis donne-moi ta valeur.', ask:'cm0'},
+        cm0_ok:{kind:'ok', say:'Ta valeur de C<sub>m</sub> sans pertes est juste. Maintenant, avec les pertes du réducteur, le moteur doit-il fournir un couple plus grand ou plus petit que C<sub>m</sub> sans pertes ?',
+               choices:[{label:'Plus grand', next:'eta_plus'},{label:'Plus petit', next:'eta_moins'},{label:'Je ne sais pas', next:'eta_ns'}]},
+        eta_plus:{say:'Exactement : le moteur doit compenser les pertes, donc fournir plus que C<sub>m</sub> sans pertes. Compare avec ta réponse à la question, C<sub>m</sub> = {v:main} N·m : est-elle plus grande que ta valeur sans pertes ?',
+               choices:[{label:'Non, elle est égale', next:'eta_eg'},{label:'Non, elle est plus petite', next:'eta_pp'},{label:'Oui', next:'@next'}]},
+        eta_eg:{err:'etaO', say:'Ta réponse ne tient donc pas compte des pertes. Sais-tu comment les faire intervenir ?',
                choices:[{label:'Oui', next:'@found'},{label:'Non', next:'eta_piste'}]},
-        eta_piste:{err:'etaM', say:'Revérifie peut-être la relation entre P<sub>sortie</sub>, P<sub>entrée</sub> et η, puis la place de η dans ton calcul de C<sub>m</sub>.',
+        eta_pp:{err:'etaM', say:'Dans ton calcul, les pertes font donc baisser le couple du moteur au lieu de l’augmenter. D’où vient l’erreur, as-tu une idée ?',
+               choices:[{label:'Oui', next:'@found'},{label:'Non', next:'eta_piste'}]},
+        eta_piste:{say:'Écris la relation entre P<sub>sortie</sub>, P<sub>entrée</sub> et η<sub>red</sub>. Le moteur fournit P<sub>entrée</sub> : pour obtenir un couple plus grand que C<sub>m</sub> sans pertes, faut-il multiplier ou diviser par η<sub>red</sub> = 0,95 ?',
                choices:[{label:'J’ai trouvé, je corrige', next:'@found'},{label:'Je ne trouve pas', next:'eta_nat'}], actions:['fiche#controles']},
-        eta_nat:{say:'⚠ Contrôle K3 : P<sub>sortie</sub> = η × P<sub>entrée</sub>, et le moteur fournit la puissance d’entrée. C<sub>m</sub> s’obtient donc en <b>divisant</b> par η = 0,95 : ta valeur correspond à un rendement oublié ou multiplié.', actions:['retry','fiche#controles']},
-        eta_moins:{say:'Pense à ce que deviennent les pertes : une partie de ce que fournit le moteur part en chaleur dans le réducteur. Alors, le moteur doit-il fournir plus ou moins que 1,96 N·m ?',
-               choices:[{label:'Plus', next:'eta_plus'},{label:'Toujours moins', next:'eta_ns'}]},
+        eta_nat:{say:'⚠ Contrôle K3 : P<sub>sortie</sub> = η<sub>red</sub> × P<sub>entrée</sub>, et c’est le moteur qui fournit P<sub>entrée</sub>. C<sub>m</sub> s’obtient donc en <b>divisant</b> C<sub>m</sub> sans pertes par η<sub>red</sub> : ta réponse correspond à un rendement oublié ou multiplié.', actions:['retry','fiche#controles']},
+        eta_moins:{say:'Pense à ce que deviennent les pertes : une partie de ce que fournit le moteur part en chaleur dans le réducteur. Alors, le moteur doit-il fournir un couple plus grand ou plus petit que C<sub>m</sub> sans pertes ?',
+               choices:[{label:'Plus grand', next:'eta_plus'},{label:'Toujours plus petit', next:'eta_ns'}]},
         eta_ns:{say:'Regarde dans la fiche la formule F3 et le contrôle K3 : P<sub>sortie</sub> = η × P<sub>entrée</sub> avec η &lt; 1. Quelle puissance est la plus grande ? Reviens ensuite me répondre.',
                choices:[{label:'La puissance d’entrée (côté moteur)', next:'eta_plus'}], actions:['fiche#controles']},
+        cm0_lost:{say:'Repartons de la première étape : quelle valeur as-tu trouvée pour le couple à une roue, C<sub>roue</sub> ?', ask:'croue',
+               choices:[{label:'Je ne l’ai pas calculé', next:'perdu_n'}]},
+        // erreurs sur C_m sans pertes
+        c0_r: {say:'Pour passer de la roue au moteur à travers le réducteur, le couple augmente-t-il ou diminue-t-il ?',
+               choices:[{label:'Il diminue côté moteur', next:'c0_r2'},{label:'Il augmente côté moteur', next:'rE_g'}]},
+        c0_r2:{say:'Exactement. Ta valeur de C<sub>m</sub> sans pertes ({v} N·m) est-elle plus petite que ton couple à une roue C<sub>roue</sub> ?',
+               choices:[{label:'Non', next:'rE_piste'},{label:'Oui', next:'@next'}]},
+        c0_eta:{err:'c0eta', say:'Sans pertes, le rendement vaut 1 : il ne doit pas apparaître dans ce calcul. Refais-le avec seulement C<sub>roue</sub> et r, puis donne-moi ta nouvelle valeur.', ask:'cm0'},
+        // première étape : couple à une roue
+        croue_ok:{kind:'ok', say:'Ta valeur de C<sub>roue</sub> est juste : la première étape est bonne. Passons le réducteur : sans pertes (η = 1), quel couple C<sub>m</sub> le moteur devrait-il fournir ? Donne-moi ta valeur.', ask:'cm0'},
+        croue_lost:{say:'Reprends cette étape : un couple, c’est une force × un bras de levier. Quelle part de T<sub>B</sub> s’exerce sur une roue, et quel est le bras de levier ? Recalcule C<sub>roue</sub>, puis donne-moi ta valeur.', ask:'croue', actions:['hint']},
         // rendement compté deux fois (valeur un peu forte)
         eta2: {say:'Combien de fois as-tu fait intervenir le rendement η dans ton calcul ?',
                choices:[{label:'Une fois', next:'@next'},{label:'Deux fois', next:'eta2_d'}]},
@@ -380,38 +450,37 @@ window.EXO = {
         rO_r: {err:'rO', say:'Bonne première étape ! La question demande le couple du <b>moteur</b>. Sais-tu comment passer du couple de la roue à celui du moteur ?',
                choices:[{label:'Oui', next:'@found'},{label:'Non', next:'rO_n'}]},
         rO_n: {say:'Retrouve la relation par les puissances : la fiche le fait en 3 lignes (« Je retrouve la formule »). Tu peux aussi prendre un coup de pouce.', actions:['fiche#formules','hint']},
-        rO_m: {say:'Compare ta valeur ({v} N·m) au couple nominal du moteur, dans les données. Avec un réducteur 1/30, le couple du moteur est-il plus grand ou plus petit que celui de la roue ?',
+        rO_m: {say:'Compare ta valeur de C<sub>m</sub> ({v} N·m) au couple nominal du moteur, dans les données. Avec un réducteur 1/30, le couple du moteur est-il plus grand ou plus petit que celui de la roue ?',
                choices:[{label:'Plus petit', next:'rO_p'},{label:'Plus grand', next:'rO_g'},{label:'Je ne sais pas', next:'rO_g'}]},
         rO_g: {say:'Pense aux puissances : P = C × ω est presque la même des deux côtés du réducteur. Le moteur tourne 30 fois plus vite que la roue : son couple est-il plus grand ou plus petit ?',
                choices:[{label:'Plus petit', next:'rO_p'},{label:'Toujours plus grand', next:'rO_nat'}], actions:['fiche#controles']},
-        rO_p: {say:'Exactement. Ta valeur est-elle environ 30 fois plus petite que le couple à une roue ?',
+        rO_p: {say:'Exactement. Ta valeur de C<sub>m</sub> est-elle environ 30 fois plus petite que ton couple à une roue C<sub>roue</sub> ?',
                choices:[{label:'Non', next:'rO_q'},{label:'Je ne sais pas', next:'rO_q'}]},
         rO_q: {err:'rO', say:'D’où vient l’erreur, as-tu une idée ?', choices:[{label:'Oui', next:'@found'},{label:'Non', next:'rO_nat'}]},
-        rO_nat:{say:'⚠ Contrôle K2 : ta valeur correspond au couple <b>à la roue</b> ; le réducteur n’a pas été traversé. Côté moteur, le couple est environ 30 fois plus petit : C<sub>m</sub> = C<sub>roue</sub> × r / η.', actions:['retry','fiche#formules']},
+        rO_nat:{say:'⚠ Contrôle K2 : ta valeur correspond au couple <b>à la roue</b>, C<sub>roue</sub> ; le réducteur n’a pas été traversé. Côté moteur, le couple est plus petit : C<sub>m</sub> = C<sub>roue</sub> × r / η<sub>red</sub>.', actions:['retry','fiche#formules']},
 
         // rapport à l'envers
         rE:   {say:'Avec un réducteur, le moteur tourne plus vite que la roue. Son couple est-il alors plus grand ou plus petit que celui de la roue ?',
                choices:[{label:'Plus petit', next:'rE_p'},{label:'Plus grand', next:'rE_g'}]},
         rE_g: {say:'Pense aux puissances : P = C × ω est presque la même des deux côtés du réducteur. Si ω est 30 fois plus grand côté moteur, le couple y est-il plus grand ou plus petit ?',
                choices:[{label:'Plus petit', next:'rE_p'},{label:'Toujours plus grand', next:'rE_nat'}], actions:['fiche#controles']},
-        rE_p: {say:'Exactement. Compare avec ton résultat ({v} N·m) : d’où vient l’erreur, as-tu une idée ?',
+        rE_p: {say:'Exactement. Compare avec ta valeur de C<sub>m</sub> ({v} N·m), qui est plus grande que C<sub>roue</sub> : d’où vient l’erreur, as-tu une idée ?',
                choices:[{label:'Oui', next:'@found'},{label:'Non', next:'rE_piste'}]},
         rE_piste:{err:'rE', say:'Revérifie peut-être ta formule du rapport de réduction, r = ω<sub>roue</sub> / ω<sub>m</sub>, et la façon dont tu l’as utilisée pour passer de la roue au moteur.',
                choices:[{label:'J’ai trouvé, je corrige', next:'@found'},{label:'Je ne trouve pas', next:'rE_nat'}], actions:['fiche#controles']},
-        rE_nat:{say:'⚠ Contrôle K2 : 900 = 30 × 30 : tu as multiplié par 30 au lieu de diviser. Côté moteur, le couple est environ 30 fois plus petit qu’à la roue : C<sub>m</sub> = C<sub>roue</sub> × r / η, avec r = 1/30.', actions:['retry','fiche#controles']},
+        rE_nat:{say:'⚠ Contrôle K2 : ta valeur correspond à un rapport de réduction utilisé à l’envers (multiplié au lieu de divisé). Côté moteur, le couple est plus petit qu’à la roue : C<sub>m</sub> = C<sub>roue</sub> × r / η<sub>red</sub>, avec r = 1/30. Refais le calcul avec cette relation.', actions:['retry','fiche#controles']},
 
         // rayon en mm
         mm:   {say:'Dans ton calcul, le rayon était-il en mètres ou en millimètres ?',
                choices:[{label:'En mètres', next:'@next'},{label:'En millimètres', next:'mm_1'}]},
         mm_1: {err:'mm', say:'Le couple est demandé en N·m. Avec une force en N et un rayon en mm, quelle unité obtiens-tu ?',
                choices:[{label:'J’ai trouvé, je corrige', next:'@found'},{label:'Je ne vois pas', next:'mm_n'}]},
-        mm_n: {say:'N × mm donne des N·mm, et 1 N·mm = 0,001 N·m : convertis le rayon en mètres, 305 mm = 0,305 m.', actions:['retry']},
+        mm_n: {say:'N × mm donne des N·mm, et 1 N·mm = 0,001 N·m : convertis le rayon R<sub>m</sub> en mètres avant de calculer.', actions:['retry']},
 
-        // valeur non reconnue
-        perdu:{say:'Reprenons étape par étape. As-tu trouvé un couple à une roue d’environ 59 N·m ?',
-               choices:[{label:'Oui', next:'perdu_o'},{label:'Non', next:'perdu_n'},{label:'Je ne l’ai pas calculé', next:'perdu_n'}]},
-        perdu_o:{say:'Le couple à la roue est bon : l’erreur est dans le passage par le réducteur. Vérifie ta relation entre C<sub>m</sub> et C<sub>roue</sub> avec les contrôles K2 et K3 de la fiche.', actions:['retry','hint','fiche#controles']},
-        perdu_n:{say:'Commence par le couple à une roue : quelle part de T<sub>B</sub> s’exerce sur une roue, et avec quel bras de levier ? Ensuite seulement, traverse le réducteur.', actions:['retry','hint']},
+        // valeur non reconnue : on demande à l'élève sa première valeur intermédiaire
+        perdu:{say:'Reprenons étape par étape. Commence par le couple à une roue : quelle valeur as-tu trouvée pour C<sub>roue</sub> ?', ask:'croue',
+               choices:[{label:'Je ne l’ai pas calculé', next:'perdu_n'}]},
+        perdu_n:{say:'Commence par là : quelle part de T<sub>B</sub> s’exerce sur une roue, et avec quel bras de levier ? Calcule C<sub>roue</sub>, puis donne-moi ta valeur.', ask:'croue', actions:['hint']},
 
         comp: {tag:'Faisons le point', say:'Tu as fait plusieurs essais. Dis-moi franchement : as-tu compris pourquoi un réducteur augmente le couple ?',
                choices:[{label:'Oui, c’est une erreur de calcul', next:'comp_oui'},{label:'Pas vraiment', next:'comp_non'}]},
@@ -422,12 +491,12 @@ window.EXO = {
         opts:[['T<sub>B</sub> en entier', false], ['T<sub>B</sub> / 2', true], ['T<sub>B</sub> / 4', false]],
         relis:'Relis les données de l’énoncé : sur combien de roues s’exerce T<sub>B</sub> ?',
         hl:'d-sol', look:'Sur combien de roues s’exerce T<sub>B</sub> ?',
-        nature:'T<sub>B</sub> est l’action du sol sur <b>les deux</b> roues : une roue n’en reçoit que la moitié, T<sub>B</sub> / 2 ≈ 192,5 N.'}),
+        nature:'T<sub>B</sub> est l’action du sol sur <b>les deux</b> roues : une roue n’en reçoit que la moitié, T<sub>B</sub> / 2.'}),
       lecture('ray', {err:'diam', ask:'Quel bras de levier as-tu utilisé ?',
         opts:[['0,61 m', false], ['0,305 m', true], ['0,1525 m', false]],
         relis:'Relis la ligne « Roue motrice » des données : la longueur donnée est-elle un rayon ou un diamètre ?',
         hl:'d-roue', look:'D<sub>m</sub>, D comme diamètre : quel est alors le rayon ?',
-        nature:'Le bras de levier est le <b>rayon</b> de la roue : R<sub>m</sub> = D<sub>m</sub> / 2 = 0,305 m. Attention à ne diviser par 2 qu’une seule fois.'})
+        nature:'Le bras de levier est le <b>rayon</b> de la roue : R<sub>m</sub> = D<sub>m</sub> / 2. Attention à ne diviser par 2 qu’une seule fois.'})
       )
     },
 
@@ -437,7 +506,13 @@ window.EXO = {
       fiche: '#formules',
       ref: D201('formule F1', '#formules'),
       point: 'refaire la chaîne : V → ω<sub>roue</sub> → ω<sub>m</sub> → N<sub>m</sub>',
-      keyLabel: {wr:'ω<sub>roue</sub>', wm:'ω<sub>m</sub>', nm:'N<sub>m</sub>'},
+      words: [
+        {w:'vitesse angulaire', say:'C’est l’angle parcouru en une seconde par un solide qui tourne. On la note ω et elle s’exprime en rad/s.'},
+        {w:'roue motrice', say:'C’est la roue entraînée par le motoréducteur ; sa dimension est dans les données.', hl:'d-roue'},
+        {w:'en sortie du moteur', say:'C’est la vitesse de l’arbre du moteur, à l’entrée du réducteur : ω<sub>m</sub>.', hl:'d-red'},
+        {w:'puis en tr/min', say:'Tours par minute : c’est la même vitesse que ω<sub>m</sub>, exprimée dans une autre unité. On la note N<sub>m</sub>.'}
+      ],
+      notion: 'Bonne idée : la fiche D2-01 explique le rapport de réduction (formule F1) ; les conversions sont rappelées dans les coups de pouce.',
       comprendre: 'comp',
       hints: [
         {ask:'Sais-tu quelle relation relie la vitesse du fauteuil à la vitesse angulaire de la roue ?',
@@ -452,9 +527,9 @@ window.EXO = {
         'Pour passer en tr/min : un tour = 2π rad, une minute = 60 s. Contrôle : en tr/min, on trouve environ 10 fois plus qu’en rad/s.'
       ],
       answers: {
-        wr: {expected: OMR, tol: 0.02, unit:'rad/s', ok:'ok_wr', lost:'perdu', errors: EWR},
-        wm: {expected: OMM, tol: 0.02, unit:'rad/s', ok:'ok_wm', lost:'perdu', errors: EWM},
-        nm: {expected: OMM * K, tol: 0.02, unit:'tr/min', ok:'ok_nm', lost:'perdu', errors: ENM}
+        wr: {expected: OMR, name:'ω<sub>roue</sub>', unit:'rad/s', ok:'ok_wr', lost:'perdu', errors: EWR},
+        wm: {expected: OMM, name:'ω<sub>m</sub>', unit:'rad/s', ok:'ok_wm', lost:'perdu', errors: EWM},
+        nm: {expected: OMM * K, name:'N<sub>m</sub>', unit:'tr/min', ok:'ok_nm', lost:'perdu', errors: ENM}
       },
       nodes: Object.assign({
         ok_wr:{kind:'ok', tag:'Vérification', say:'Juste : ω<sub>roue</sub> ≈ 5,46 rad/s (un peu moins d’un tour par seconde).'},
@@ -472,14 +547,14 @@ window.EXO = {
                choices:[{label:'Moins', next:'kmh_3'},{label:'Plus', next:'kmh_nat'}]},
         kmh_3:{err:'kmh', say:'Exactement. Vérifie maintenant la valeur en m/s que tu as utilisée : est-elle plus petite que 6 ?',
                choices:[{label:'J’ai trouvé, je corrige', next:'@found'},{label:'Je ne trouve pas', next:'kmh_nat'}]},
-        kmh_nat:{say:'6 km/h = 6 000 m / 3 600 s ≈ 1,67 m/s : on <b>divise</b> par 3,6. Ta valeur correspond à une vitesse non convertie, ou multipliée par 3,6 au lieu d’être divisée.', actions:['retry']},
+        kmh_nat:{say:'6 km/h, c’est 6 000 m parcourus en 3 600 s : pour passer en m/s, on <b>divise</b> par 3,6. Ta valeur de ω<sub>roue</sub> correspond à une vitesse V non convertie, ou multipliée par 3,6 au lieu d’être divisée.', actions:['retry']},
 
         // rayon en mm
         mmW:  {say:'Dans ton calcul, R était-il en mètres ou en millimètres ?',
                choices:[{label:'En mètres', next:'@next'},{label:'En millimètres', next:'mmW_1'}]},
         mmW_1:{err:'mmW', say:'Si V est en m/s, dans quelle unité doit être R pour que ω soit en rad/s ?',
                choices:[{label:'J’ai trouvé, je corrige', next:'@found'},{label:'Je ne vois pas', next:'mmW_n'}]},
-        mmW_n:{say:'R doit être en mètres : 305 mm = 0,305 m.', actions:['retry']},
+        mmW_n:{say:'R doit être en mètres : convertis le rayon de la roue avant de calculer ω<sub>roue</sub>.', actions:['retry']},
 
         // tr/min au lieu de rad/s
         trW:  {say:'La valeur que tu as proposée est-elle en rad/s ou en tr/min ?',
@@ -495,7 +570,7 @@ window.EXO = {
                choices:[{label:'Le moteur', next:'rW_p'},{label:'La roue', next:'rW_k1'}]},
         rW_k1:{say:'Regarde le contrôle K1 de la fiche, puis reviens me répondre.', actions:['fiche#controles'],
                choices:[{label:'Le moteur tourne plus vite', next:'rW_p'}]},
-        rW_p: {say:'Exactement. Compare ton résultat ({v} rad/s) à ω<sub>roue</sub> : est-il plus grand ?',
+        rW_p: {say:'Exactement. Compare ta valeur de ω<sub>m</sub> ({v} rad/s) à ta valeur de ω<sub>roue</sub> : est-elle plus grande ?',
                choices:[{label:'Non', next:'rW_q'},{label:'Oui', next:'@next'}]},
         rW_q: {err:'rM', say:'D’où vient l’erreur, as-tu une idée ?', choices:[{label:'Oui', next:'@found'},{label:'Non', next:'rW_piste'}]},
         rW_piste:{say:'Revérifie peut-être ta formule du rapport de réduction : r = ω<sub>roue</sub> / ω<sub>m</sub>. Qu’est-ce qui est en haut, qu’est-ce qui est en bas ? Isole ω<sub>m</sub>.',
@@ -515,9 +590,9 @@ window.EXO = {
                choices:[{label:'Plus grande', next:'nmC_p'},{label:'Plus petite', next:'nmC_m'},{label:'Je ne sais pas', next:'nmC_m'}]},
         nmC_m:{say:'Pense à 1 tr/min : un tour (2π ≈ 6,3 rad) en une minute (60 s). Combien de rad/s cela fait-il, environ ?',
                choices:[{label:'Environ 0,1 rad/s', next:'nmC_p2'},{label:'Environ 10 rad/s', next:'nmC_piste'},{label:'Je ne sais pas', next:'nmC_piste'}]},
-        nmC_p2:{say:'Exactement : 1 tr/min ≈ 0,1 rad/s. La valeur en tr/min est donc environ 10 fois plus grande que celle en rad/s. Compare ton résultat ({v} tr/min) à ω<sub>m</sub> en rad/s : est-il environ 10 fois plus grand ?',
+        nmC_p2:{say:'Exactement : 1 tr/min ≈ 0,1 rad/s. La valeur en tr/min est donc environ 10 fois plus grande que celle en rad/s. Compare ta valeur de N<sub>m</sub> ({v} tr/min) à ta valeur de ω<sub>m</sub> en rad/s : est-elle environ 10 fois plus grande ?',
                choices:[{label:'Non', next:'nmC_q'},{label:'Oui', next:'@next'}]},
-        nmC_p:{say:'Exactement (environ 10 fois plus grande). Compare ton résultat ({v} tr/min) à ω<sub>m</sub> en rad/s : est-il environ 10 fois plus grand ?',
+        nmC_p:{say:'Exactement (environ 10 fois plus grande). Compare ta valeur de N<sub>m</sub> ({v} tr/min) à ta valeur de ω<sub>m</sub> en rad/s : est-elle environ 10 fois plus grande ?',
                choices:[{label:'Non', next:'nmC_q'},{label:'Oui', next:'@next'}]},
         nmC_q:{err:'inv', say:'D’où vient l’erreur, as-tu une idée ?', choices:[{label:'Oui', next:'@found'},{label:'Non', next:'nmC_piste'}]},
         nmC_piste:{say:'Retrouve la conversion en réécrivant le calcul avec les unités : 1 tour = 2π rad et 1 min = 60 s. Vérifie que les rad se simplifient et qu’il reste des tours par minute.',
@@ -545,7 +620,7 @@ window.EXO = {
         opts:[['0,61 m', false], ['0,305 m', true], ['0,1525 m', false]],
         relis:'Relis la ligne « Roue motrice » des données : la longueur donnée est-elle un rayon ou un diamètre ?',
         hl:'d-roue', look:'D<sub>m</sub>, D comme diamètre : quel est alors le rayon ?',
-        nature:'Dans V = ω × R, R est le <b>rayon</b> de la roue : R = D<sub>m</sub> / 2 = 0,305 m. Attention à ne diviser par 2 qu’une seule fois.'})
+        nature:'Dans V = ω × R, R est le <b>rayon</b> de la roue : R = D<sub>m</sub> / 2. Attention à ne diviser par 2 qu’une seule fois.'})
       )
     }
   }
@@ -553,25 +628,30 @@ window.EXO = {
 })();
 </script>
 <script>
-// Moteur commun des pages d'exercice (version 3)
+// Moteur commun des pages d'exercice (version 4)
 // - panneau de dialogue à côté de l'exercice (l'androïde questionne l'élève)
-// - diagnostic par paramètres : chaque erreur type (oubli, facteur inversé, conversion…) a un facteur ;
-//   le moteur teste toutes les erreurs seules et toutes les combinaisons de deux erreurs
+// - diagnostic par paramètres : chaque erreur type a un facteur ; le moteur teste chaque erreur seule
+//   et toutes les combinaisons de deux erreurs
+// - v4 : tolérance resserrée ; valeur trop arrondie ou ambiguë (juste OU erreur type) → demande de précision
+// - v4 : chaque valeur est nommée (« ta valeur de C<sub>m</sub> ») ; les valeurs intermédiaires sont
+//   demandées à l'élève dans le panneau (nœud « ask »), jamais données
+// - v4 : repérage des réponses au hasard (valeurs non reconnues à la suite, coups de pouce enchaînés) :
+//   l'assistant change de stratégie (consigne → mot qui bloque → relecture ; sinon fiche et exemple)
+//   et ces valeurs ne comptent plus pour débloquer la correction
+// - v4 : zoom sur les figures ; mots du lexique au survol
 // - dialogue : constat neutre → « as-tu une idée ? » → questions qui localisent → pistes → nature de l'erreur en dernier
 // - donnée mal lue : « es-tu certain ? » → « relis l'énoncé » → donnée surlignée en rouge → indice final
-// - coups de pouce questionnants (« connais-tu la relation ? » avant de la donner)
-// - « Voir la correction » verrouillé jusqu'à 3 valeurs proposées ou une bonne réponse
-// - fiche en surimpression, toujours rouverte sur la section demandée
-// - bilan de fin d'exercice (tableau imprimable en PDF)
-// - sauvegarde des réponses et du dialogue dans le navigateur
+// - coups de pouce questionnants ; « Voir la correction » verrouillé ; fiche en surimpression ; bilan imprimable
 (function(){
   const C = window.EXO; if(!C) return;
-  const KEY = 'exo3:' + location.pathname;
+  const KEY = 'exo4:' + location.pathname;
   const LOCK = C.lockTries || 3;      // valeurs à proposer avant de débloquer la correction
   const DTOL = C.diagTol || 0.025;    // tolérance (relative) pour reconnaître une erreur type
+  const TOL = C.tol || 0.015;         // tolérance (relative) d'une bonne réponse
+  const COARSE = C.coarse || 0.03;    // demi-arrondi relatif maximal accepté (« 2,1 » pour 2,06 : oui ; « 2 » : non)
   const tri = '<svg viewBox="0 0 24 24" style="width:1em;height:1em;vertical-align:-2px" aria-hidden="true"><path d="M12 2.5 1.5 21h21z" fill="#d0602a"/><rect x="11" y="9" width="2" height="6.5" fill="#fff"/><rect x="11" y="17" width="2" height="2" fill="#fff"/></svg>';
-  const ACT = { fiche:'Voir la fiche', fichefull:'Retravailler toute la fiche', exemple:'Refaire l’exemple de la fiche', hint:'Un coup de pouce', retry:'Je corrige ma réponse', corr:'Voir la correction', bilan:'Voir mon bilan' };
-  const state = { inputs:{}, used:{}, tries:{}, total:0, log:'', ok:{}, att:{}, corrSeen:{}, done:false };
+  const ACT = { fiche:'Voir la fiche', fichefull:'Retravailler toute la fiche', exemple:'Ouvrir l’exemple de la fiche', hint:'Un coup de pouce', retry:'Je corrige ma réponse', corr:'Voir la correction', bilan:'Voir mon bilan' };
+  const state = { inputs:{}, used:{}, tries:{}, cnt:{}, unk:{}, hseq:{}, hgate:{}, last:{}, total:0, log:'', ok:{}, att:{}, corrSeen:{}, done:false };
   let saving = true;
 
   // ---------- mise en page : exercice + panneau ----------
@@ -584,7 +664,7 @@ window.EXO = {
     + '<div class="chat-foot"><span>Tes réponses sont gardées sur cet appareil.</span><button type="button" class="reset">Tout effacer</button></div>';
   wrap.appendChild(chat);
   const small = window.matchMedia('(max-width:1100px)');
-  if(small.matches){ chat.classList.add('min'); }
+  if(small.matches){ chat.classList.add('min'); chat.querySelector('.toggle').textContent = 'Ouvrir'; }
   const log = chat.querySelector('.chat-log');
   chat.querySelector('.toggle').addEventListener('click', e => { chat.classList.toggle('min'); e.target.textContent = chat.classList.contains('min') ? 'Ouvrir' : 'Réduire'; });
   chat.querySelector('.reset').addEventListener('click', () => { try{ localStorage.removeItem(KEY); }catch(e){} saving = false; location.reload(); });
@@ -595,7 +675,7 @@ window.EXO = {
   document.body.appendChild(ov);
   const frame = ov.querySelector('iframe');
   let ficheBase = '', ficheHash = '';
-  frame.addEventListener('load', () => {            // filet de sécurité : on force le défilement sur la section
+  frame.addEventListener('load', () => {
     if(!ficheHash) return;
     try{ const el = frame.contentDocument.getElementById(ficheHash); if(el) el.scrollIntoView(); }catch(e){}
   });
@@ -603,12 +683,58 @@ window.EXO = {
     const i = url.indexOf('#');
     ficheBase = i < 0 ? url : url.slice(0, i);
     ficheHash = i < 0 ? '' : url.slice(i + 1);
-    frame.src = ficheBase + '?t=' + Date.now() + (ficheHash ? '#' + ficheHash : '');   // rechargement forcé
+    frame.src = ficheBase + '?t=' + Date.now() + (ficheHash ? '#' + ficheHash : '');
     ov.querySelector('b').textContent = C.ficheTitle || 'Fiche'; ov.classList.add('open');
   }
   ov.querySelector('.close').addEventListener('click', () => ov.classList.remove('open'));
   ov.querySelector('.full').addEventListener('click', () => openFiche(ficheBase + '#top'));
   ov.addEventListener('click', e => { if(e.target === ov) ov.classList.remove('open'); });
+
+  // ---------- zoom sur les figures ----------
+  const zm = document.createElement('div'); zm.className = 'zoom';
+  zm.innerHTML = '<div class="zbar"><b></b><button type="button" data-z="-" aria-label="Réduire">−</button><button type="button" data-z="+" aria-label="Agrandir">+</button><button type="button" data-z="0">Ajuster</button><button type="button" class="zclose">Fermer</button></div><div class="zview"><img alt=""></div><p class="zhelp">Molette ou boutons + / − pour zoomer, double-clic pour agrandir ; fais glisser l’image pour te déplacer. Sur téléphone : écarte deux doigts.</p>';
+  document.body.appendChild(zm);
+  const zv = zm.querySelector('.zview'), zi = zm.querySelector('.zview img');
+  let zs = 1;
+  function zfit(){ return Math.min((zv.clientWidth - 16) / zi.naturalWidth, (zv.clientHeight - 16) / zi.naturalHeight); }
+  function zset(s, fx, fy){
+    fx = fx === undefined ? 0.5 : fx; fy = fy === undefined ? 0.5 : fy;
+    const px = (zv.scrollLeft + zv.clientWidth * fx) / (zi.offsetWidth || 1), py = (zv.scrollTop + zv.clientHeight * fy) / (zi.offsetHeight || 1);
+    zs = Math.max(0.1, Math.min(s, 8));
+    zi.style.width = zi.naturalWidth * zs + 'px';
+    zv.scrollLeft = px * zi.offsetWidth - zv.clientWidth * fx; zv.scrollTop = py * zi.offsetHeight - zv.clientHeight * fy;
+  }
+  function zopen(img){
+    zm.querySelector('b').textContent = img.dataset.cap || img.alt || 'Figure';
+    zm.classList.add('open');
+    const go = () => { zs = zfit(); zi.style.width = zi.naturalWidth * zs + 'px'; zv.scrollTop = 0; zv.scrollLeft = 0; };
+    zi.onload = go; zi.src = img.currentSrc || img.src;
+    if(zi.complete && zi.naturalWidth) go();
+  }
+  zm.querySelector('.zbar').addEventListener('click', e => {
+    const b = e.target.closest('button'); if(!b) return;
+    if(b.classList.contains('zclose')) zm.classList.remove('open');
+    else if(b.dataset.z === '+') zset(zs * 1.4);
+    else if(b.dataset.z === '-') zset(zs / 1.4);
+    else if(b.dataset.z === '0') zset(zfit());
+  });
+  zv.addEventListener('wheel', e => { e.preventDefault(); const r = zv.getBoundingClientRect(); zset(zs * (e.deltaY < 0 ? 1.15 : 1 / 1.15), (e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height); }, {passive:false});
+  let drag = null;
+  zv.addEventListener('pointerdown', e => { if(e.pointerType !== 'mouse') return; drag = {x:e.clientX, y:e.clientY, l:zv.scrollLeft, t:zv.scrollTop}; zv.classList.add('drag'); e.preventDefault(); });
+  window.addEventListener('pointermove', e => { if(!drag) return; zv.scrollLeft = drag.l - (e.clientX - drag.x); zv.scrollTop = drag.t - (e.clientY - drag.y); });
+  window.addEventListener('pointerup', () => { drag = null; zv.classList.remove('drag'); });
+  zv.addEventListener('dblclick', e => { const r = zv.getBoundingClientRect(); zset(zs * 2, (e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height); });
+  zv.addEventListener('click', e => { if(e.target === zv) zm.classList.remove('open'); });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape'){ zm.classList.remove('open'); ov.classList.remove('open'); } });
+  document.querySelectorAll('figure img, img.zoomable').forEach(img => {
+    if(img.closest('.chat')) return;
+    img.classList.add('zoomable'); img.tabIndex = 0; img.title = 'Cliquer pour agrandir';
+    const fig = img.closest('figure');
+    const fc = fig && fig.querySelector('figcaption'); if(fc) img.dataset.cap = fc.textContent;
+    if(fig && !fig.querySelector('.zhint')){ const h = document.createElement('button'); h.type = 'button'; h.className = 'zhint'; h.textContent = '🔍 Agrandir'; fig.appendChild(h); h.addEventListener('click', () => zopen(img)); }
+    img.addEventListener('click', () => zopen(img));
+    img.addEventListener('keydown', e => { if(e.key === 'Enter') zopen(img); });
+  });
 
   // ---------- messages ----------
   function fmt(v){
@@ -619,13 +745,19 @@ window.EXO = {
   function save(){ if(!saving) return; state.log = log.innerHTML; try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
   function scroll(){ log.scrollTop = log.scrollHeight; }
   function clearEmpty(){ const e = log.querySelector('.chat-empty'); if(e) e.remove(); }
-  function disableOld(){ log.querySelectorAll('.choices button').forEach(b => b.disabled = true); }
+  function disableOld(){ log.querySelectorAll('.choices button, .ask input, .ask button').forEach(b => b.disabled = true); }
   function me(text){ clearEmpty(); const d = document.createElement('div'); d.className = 'msg me'; d.innerHTML = text; log.appendChild(d); scroll(); }
   function actLabel(a){ const k = a.split('#')[0]; return ACT[k] || a; }
-  function bot(q, html, kind, tag, choices, actions){
+  function bot(q, html, kind, tag, choices, actions, ask){
     clearEmpty(); disableOld();
     const d = document.createElement('div'); d.className = 'msg bot' + (kind ? ' ' + kind : '');
     d.innerHTML = (tag ? '<span class="tag">' + tag + '</span>' : '') + html.replace(/⚠/g, tri);
+    if(ask){
+      const spec = C.questions[q].answers[ask];
+      const a = document.createElement('div'); a.className = 'ask'; a.dataset.q = q; a.dataset.k = ask;
+      a.innerHTML = '<label>' + spec.name + ' =</label><input inputmode="decimal" placeholder="ta valeur"><span>' + (spec.unit || '') + '</span><button type="button">Valider</button>';
+      d.appendChild(a);
+    }
     const all = (choices || []).map(c => ({label:c.label, next:c.next})).concat((actions || []).map(a => ({label:actLabel(a), act:a})));
     if(all.length){
       const box = document.createElement('div'); box.className = 'choices';
@@ -636,14 +768,23 @@ window.EXO = {
     log.appendChild(d);
     if(chat.classList.contains('min')){ chat.classList.remove('min'); chat.querySelector('.toggle').textContent = 'Réduire'; }
     scroll(); save();
+    if(ask){ const i = d.querySelector('.ask input'); if(i && !small.matches) i.focus({preventScroll:true}); }
     return d;
   }
   log.addEventListener('click', e => {
+    const ab = e.target.closest('.ask button');
+    if(ab && !ab.disabled){ submitAsk(ab.closest('.ask')); return; }
     const b = e.target.closest('.choices button'); if(!b || b.disabled) return;
     const q = b.dataset.q; me(b.innerHTML);
     if(b.dataset.next) go(q, b.dataset.next);
     else action(q, b.dataset.act);
   });
+  log.addEventListener('keydown', e => { if(e.key === 'Enter' && e.target.closest('.ask input')){ e.preventDefault(); submitAsk(e.target.closest('.ask')); } });
+  function submitAsk(box){
+    const q = box.dataset.q, k = box.dataset.k, inp = box.querySelector('input');
+    const spec = C.questions[q].answers[k];
+    checkValue(q, k, inp.value, spec.name + ' = ' + inp.value + ' ' + (spec.unit || ''));
+  }
 
   // ---------- surlignage d'une donnée de l'énoncé ----------
   function highlight(id){
@@ -669,26 +810,30 @@ window.EXO = {
   const lastK = {};
   function focusInput(q){
     const root = Q[q].root;
-    const i = (lastK[q] && root.querySelector('input[data-k="' + lastK[q] + '"]')) || root.querySelector('input');
-    if(i){ i.focus(); i.select(); }
+    const i = (lastK[q] && root.querySelector('input[data-k="' + lastK[q] + '"]')) || root.querySelector('.answer input');
+    if(i){ i.focus({preventScroll:true}); i.scrollIntoView({behavior:'smooth', block:'center'}); i.select(); }
   }
 
   // ---------- dialogue ----------
   let lastV = null;
-  const pending = {};          // point « as-tu compris ? » en attente de la fin de la branche
-  const diag = {};             // diagnostic en cours, par question : {k, queue:[erreurs], i, att}
+  const pending = {};
+  const diag = {};
   function errById(q, k, id){ return (C.questions[q].answers[k].errors || []).find(e => e.id === id); }
-  function sub(s){ return s.replace(/\{v\}/g, lastV === null ? '' : fmt(lastV)); }
+  function sub(q, s){ return s.replace(/\{v:(\w+)\}/g, (m, k) => { const x = state.last[q + ':' + k]; return x === undefined ? '' : fmt(x); })
+                               .replace(/\{v\}/g, lastV === null ? '' : fmt(lastV)); }
   function say(q, n, prefix, id){
     const cfg = C.questions[q];
     if(n.hl) highlight(n.hl);
+    if(n.reset) state.unk[q] = 0;             // l'élève est entré dans la démarche : la prochaine valeur compte
     const dq = diag[q];
-    if(n.err && dq && dq.att){                         // l'élève a localisé une erreur : on la note pour le bilan
-      const id = (dq.i >= 0 && dq.queue[dq.i]) ? dq.queue[dq.i].id : n.err;
-      const a = dq.att; a.conf = a.conf || []; if(!a.conf.includes(id)) a.conf.push(id);
+    if(n.err && dq && dq.att){
+      const eid = (dq.i >= 0 && dq.queue[dq.i]) ? dq.queue[dq.i].id : n.err;
+      const a = dq.att; a.conf = a.conf || []; if(!a.conf.includes(eid)) a.conf.push(eid);
     }
-    bot(q, (prefix || '') + sub(n.say), n.kind || '', n.tag || '', n.choices, n.actions);
-    if(pending[q] && !(n.choices && n.choices.length) && id !== cfg.comprendre){ pending[q] = false; node(q, cfg.comprendre); }
+    bot(q, (prefix || '') + sub(q, n.say), n.kind || '', n.tag || '', n.choices, n.actions, n.ask);
+    if(n.open) action(q, n.open);
+    if(state.bilanWait && !(n.choices && n.choices.length) && !n.ask){ bilanMsg(); return; }
+    if(pending[q] && !n.reset && !(n.choices && n.choices.length) && !n.ask && id !== cfg.comprendre){ pending[q] = false; node(q, cfg.comprendre); }
   }
   function node(q, id, prefix){ const n = C.questions[q].nodes[id]; if(n) say(q, n, prefix, id); }
 
@@ -696,32 +841,60 @@ window.EXO = {
   const COMMON = {
     '@found':  {say:'Très bien : corrige ta valeur, puis clique à nouveau sur « Vérifier ».'},
     '@retry':  {say:'D’accord : propose une valeur, même approximative, puis clique sur « Vérifier ». Même fausse, elle m’aide à voir où tu bloques.'},
-    '@lockno': {say:'Alors commence par l’exemple de la fiche : il suit la même démarche que cette question. Refais-le sur ta feuille, puis reviens proposer une valeur, même approximative.', actions:['exemple','hint']},
     '@fin':    {say:'Tes réponses à mes questions sont justes : l’erreur se cache sans doute dans l’application numérique. Refais-la pas à pas, en écrivant l’unité à chaque ligne.',
                 choices:[{label:'Je ne trouve toujours pas', next:'@nature'}], actions:['retry','hint']},
-    '@perdu':  {say:'Reprenons étape par étape : vérifie chaque résultat intermédiaire avec un contrôle de bon sens, ou prends un coup de pouce.', actions:['retry','hint','fiche']}
+    '@perdu':  {say:'Reprenons étape par étape : vérifie chaque résultat intermédiaire avec un contrôle de bon sens, ou prends un coup de pouce.', actions:['retry','hint','fiche']},
+    // ----- changement de stratégie (réponses au hasard, coups de pouce enchaînés, correction réclamée) -----
+    '@bloque': {tag:'Faisons une pause', say:'Dis-moi ce qui te bloque.',
+                choices:[{label:'Je ne comprends pas bien la consigne', next:'@consigne'},{label:'Je préfère revoir la notion', next:'@notion'},{label:'Je veux juste la correction', next:'@recette'}]},
+    '@consigne':{say:'Relis la consigne lentement : je l’ai encadrée en rouge. Quel mot, ou quel morceau de phrase, te pose problème ?'},
+    '@clair':  {reset:true, say:'Très bien. Avant de calculer, écris sur ta feuille : la grandeur cherchée et son unité, puis les données dont tu as besoin. Ensuite, propose une valeur.', actions:['retry']},
+    '@aucun':  {say:'D’accord : les mots sont clairs, c’est la démarche qui manque. Dans ce cas, le plus efficace est de revoir la notion dans la fiche, puis de traiter un exemple du même type.',
+                choices:[{label:'D’accord, je revois la notion', next:'@notion'}]},
+    '@recette':{say:'La correction te montrera des calculs, mais pas pourquoi on les fait : au contrôle, la question sera un peu différente et la « recette » ne marchera plus. Veux-tu plutôt traiter un exemple du même type ? Ensuite, tu reviendras proposer ta valeur.',
+                choices:[{label:'D’accord, je fais l’exemple', next:'@ex'},{label:'Non : je te dis ce qui bloque', next:'@consigne'}]},
+    '@ex':     {reset:true, open:'exemple', say:'L’exemple s’ouvre à côté. Fais-le sur ta feuille en cachant la solution, puis compare. Reviens ensuite proposer une valeur pour l’exercice : tes réponses sont gardées.', actions:['exemple','retry']}
   };
+  function wordsNode(q){
+    const cfg = C.questions[q], ws = cfg.words || [];
+    return Object.assign({}, COMMON['@consigne'], {hl: Q[q].stmt,
+      choices: ws.map((w, i) => ({label:w.w, next:'@w:' + i}))
+        .concat([{label:'En la relisant, j’ai compris', next:'@clair'}, {label:'Aucun mot : je ne sais pas par où commencer', next:'@aucun'}])});
+  }
+  function notionNode(q){
+    const cfg = C.questions[q];
+    return {reset:true, tag:'Revoir la notion', say:(cfg.notion || 'Bonne idée.') + ' Pour te servir de la fiche : 1. lis « L’essentiel » ; 2. refais « Je retrouve la formule » ligne par ligne sur ta feuille ; 3. traite l’exemple en cachant la solution, puis compare. Si quelque chose bloque pendant ta lecture, reviens me le dire ici. Veux-tu traiter l’exemple du même type ?',
+            choices:[{label:'Oui, je fais l’exemple', next:'@ex'}], actions:['fiche']};
+  }
   function go(q, next){
     const cfg = C.questions[q], d = diag[q];
     if(next === '@found' || next === '@retry'){ focusInput(q); say(q, COMMON[next], '', next); return; }
-    if(next === '@lockno' || next === '@fin' || next === '@perdu'){ say(q, COMMON[next], '', next); return; }
-    if(next === '@idee'){                          // l'élève n'a pas d'idée : on commence à localiser
+    if(next === '@consigne'){ say(q, wordsNode(q), '', next); return; }
+    if(next === '@notion' || next === '@lockno'){ say(q, notionNode(q), '', next); return; }
+    if(next.startsWith('@w:')){
+      const w = cfg.words[+next.slice(3)];
+      say(q, {hl: w.hl || Q[q].stmt, say: w.say + ' Relis la consigne avec cette précision en tête : peux-tu maintenant dire ce qu’on te demande de calculer, et à partir de quelles données ?',
+              choices:[{label:'Oui, je me lance', next:'@clair'},{label:'Un autre mot me bloque', next:'@consigne'},{label:'Pas encore', next:'@notion'}]}, '', next);
+      return;
+    }
+    if(COMMON[next] && next !== '@idee' && next !== '@next' && next !== '@nature'){ say(q, COMMON[next], '', next); return; }
+    if(next === '@idee'){
       if(d && d.queue.length){ d.i = 0; node(q, d.queue[0].start, 'Cherchons ensemble. '); }
       else { const lost = d && cfg.answers[d.k].lost; if(lost && cfg.nodes[lost]) node(q, lost); else say(q, COMMON['@perdu'], '', '@perdu'); }
       return;
     }
-    if(next === '@next'){                          // ce point est juste : erreur suivante de la liste
+    if(next === '@next'){
       if(d && d.i + 1 < d.queue.length){ d.i++; node(q, d.queue[d.i].start, 'D’accord, ce point-là est juste. '); }
       else say(q, COMMON['@fin'], 'D’accord, ce point-là est juste. ', '@fin');
       return;
     }
-    if(next === '@nature'){                        // en tout dernier : la nature de l'erreur la plus probable
+    if(next === '@nature'){
       const e = d && d.queue[0];
       if(e && e.nature) node(q, e.nature);
       else say(q, {say:'Regarde la correction détaillée de la fiche (l’exemple), puis refais ton calcul.', actions:['exemple','retry']}, '', '@x');
       return;
     }
-    if(next.startsWith('@hy:') || next.startsWith('@hn:')){   // réponse à un coup de pouce questionnant
+    if(next.startsWith('@hy:') || next.startsWith('@hn:')){
       const h = cfg.hints[+next.slice(4)];
       const yes = next[2] === 'y';
       say(q, {say: yes ? h.yes : h.no, actions: (yes ? h.yesAct : h.noAct) || ['retry','fiche']}, '', '@h');
@@ -731,23 +904,28 @@ window.EXO = {
   }
 
   // ---------- diagnostic ----------
-  function ratioText(rho, unit, v){
-    const val = '(' + fmt(v) + (unit ? ' ' + unit : '') + ')';
+  function nameOf(spec){ return spec.name ? 'Ta valeur de ' + spec.name : 'Ta valeur'; }
+  function ratioText(rho, spec, v){
+    const val = '(' + fmt(v) + (spec.unit ? ' ' + spec.unit : '') + ')';
+    const N = nameOf(spec);
     const up = rho > 1, f = up ? rho : 1 / rho;
-    if(f < 1.2) return 'L’ordre de grandeur de ta valeur ' + val + ' est bon, mais elle est un peu trop ' + (up ? 'forte' : 'faible') + '.';
-    if(f < 1.75) return 'Ta valeur ' + val + ' est trop ' + (up ? 'grande' : 'petite') + ', d’environ ' + Math.round((up ? rho - 1 : 1 - rho) * 100) + ' %.';
-    if(f < 2.3) return 'Ta valeur ' + val + ' est environ ' + (up ? 'le double' : 'la moitié') + ' de ce qu’il faut.';
+    if(f < 1.2) return 'L’ordre de grandeur est bon, mais ' + N.charAt(0).toLowerCase() + N.slice(1) + ' ' + val + ' est un peu trop ' + (up ? 'forte' : 'faible') + '.';
+    if(f < 1.75) return N + ' ' + val + ' est trop ' + (up ? 'grande' : 'petite') + ', d’environ ' + Math.round((up ? rho - 1 : 1 - rho) * 100) + ' %.';
+    if(f < 2.3) return N + ' ' + val + ' est environ ' + (up ? 'le double' : 'la moitié') + ' de ce qu’il faut.';
     const n = f < 10 ? Math.round(f * 10) / 10 : f < 100 ? Math.round(f) : Math.round(f / 10) * 10;
-    return 'Ta valeur ' + val + ' est environ ' + n.toLocaleString('fr-FR') + ' fois trop ' + (up ? 'grande' : 'petite') + '.';
+    return N + ' ' + val + ' est environ ' + n.toLocaleString('fr-FR') + ' fois trop ' + (up ? 'grande' : 'petite') + '.';
   }
-  function candidates(q, k, rho){
+  function combos(q, k){
     const spec = C.questions[q].answers[k];
     const errs = (spec.errors || []).filter(e => !(e.up && state.ok[q + ':' + e.up]));
     const list = [];
     errs.forEach((e, i) => list.push({errs:[e], f:e.f, n:1, i}));
     errs.forEach((a, i) => errs.forEach((b, j) => { if(j > i && a.p !== b.p) list.push({errs:[a, b], f:a.f * b.f, n:2, i: i * 100 + j}); }));
+    return list.filter(c => Math.abs(Math.log(c.f)) > 0.03);   // deux erreurs qui se compensent : indécelables
+  }
+  function candidates(q, k, rho){
     const tol = Math.log(1 + DTOL);
-    return list.map(c => ({...c, d:Math.abs(Math.log(rho / c.f))}))
+    return combos(q, k).map(c => ({...c, d:Math.abs(Math.log(rho / c.f))}))
                .filter(c => c.d <= tol)
                .sort((a, b) => (a.d + (a.n - 1) * 0.008) - (b.d + (b.n - 1) * 0.008) || a.i - b.i);
   }
@@ -756,21 +934,21 @@ window.EXO = {
     const rho = v / spec.expected;
     const cands = candidates(q, k, rho);
     const queue = [];
-    // dans une combinaison, on cherche d'abord l'erreur qui pèse le plus (facteur le plus éloigné de 1)
     cands.forEach(c => c.errs.slice().sort((a, b) => Math.abs(Math.log(b.f)) - Math.abs(Math.log(a.f)))
                               .forEach(e => { if(!queue.some(x => x.start === e.start)) queue.push(e); }));
     const att = {k, v, hyps: cands.slice(0, 2).map(c => c.errs.map(e => e.id))};
     state.att[q] = state.att[q] || []; state.att[q].push(att);
     diag[q] = {k, queue, i:-1, att};
-    let s = ratioText(rho, spec.unit, v);
+    let s = ratioText(rho, spec, v);
     if(spec.sense){ const x = spec.sense.find(z => rho >= z.min && rho < z.max); if(x) s += ' ' + x.say; }
     say(q, {kind:'ko', tag:'Vérification', say: s + ' D’où peut venir l’écart : as-tu une idée ?',
             choices:[{label:'Oui, je crois', next:'@found'}, {label:'Non, pas vraiment', next:'@idee'}]}, '', '@constat');
   }
 
   // ---------- lecture des nombres : 2,06 · 2.06 · 1/6 · 1,5e3 · 1,5×10^3 ----------
+  function clean(s){ return (s || '').trim().replace(/\s/g,'').replace(/^[≈=~]+/, '').replace(/,/g, '.').replace(/[−–]/g, '-'); }
   function num(s){
-    s = (s || '').trim().replace(/\s/g,'').replace(/^[≈=~]+/, '').replace(/,/g, '.').replace(/[−–]/g, '-');
+    s = clean(s);
     if(s === '') return NaN;
     let m = s.match(/^(-?\d*\.?\d+)\/(-?\d*\.?\d+)$/);
     if(m) return Number(m[1]) / Number(m[2]);
@@ -780,19 +958,85 @@ window.EXO = {
     if(m) return Math.pow(10, Number(m[1]));
     return Number(s);
   }
+  // demi-unité du dernier chiffre écrit : « 2 » → 0,5 ; « 2,0 » → 0,05 ; « 1/6 » → 0 (valeur exacte)
+  function halfUlp(s){
+    s = clean(s);
+    if(/\//.test(s)) return 0;
+    let ex = 0;
+    const m = s.match(/^(.*?)(?:[x×*·]10\^?\(?(-?\d+)\)?|e(-?\d+))$/i);
+    if(m){ ex = Number(m[2] || m[3] || 0); s = m[1]; }
+    const dot = s.indexOf('.');
+    const dec = dot < 0 ? 0 : s.length - dot - 1;
+    return 0.5 * Math.pow(10, ex - dec);
+  }
+  // juste / trop arrondie ou ambiguë / fausse
+  function judge(q, k, str, v){
+    const spec = C.questions[q].answers[k];
+    const tol = spec.tol || TOL, a = Math.abs(v), h = halfUlp(str);
+    const rel = Math.abs(v / spec.expected - 1);
+    const inI = x => Math.abs(x) >= a - h - 1e-12 && Math.abs(x) <= a + h + 1e-12;
+    const expIn = inI(spec.expected);
+    const errVals = combos(q, k).map(c => spec.expected * c.f);
+    const amb = errVals.some(x => inI(x) || Math.abs(v / x - 1) <= tol);
+    if((rel <= tol || expIn) && amb) return 'precise';
+    if(rel <= tol) return 'ok';
+    if(expIn) return (h / a <= (spec.coarse || COARSE)) ? 'ok' : 'precise';
+    return 'ko';
+  }
+
+  // ---------- vérification d'une valeur (champ de l'exercice ou question de l'assistant) ----------
+  function checkValue(q, k, raw, echo){
+    const cfg = C.questions[q], spec = cfg.answers[k], root = Q[q].root;
+    const v = num(raw);
+    if(isNaN(v)){ bot(q, (raw || '').trim() === '' ? 'Écris d’abord ta valeur numérique, sans l’unité.' : 'Je ne comprends pas cette écriture. Écris ta valeur sans l’unité, par exemple 2,06 ou 1/6.', 'ko', '', [], [], spec.hidden ? k : null); return; }
+    me(echo);
+    document.querySelectorAll('.hl').forEach(x => x.classList.remove('hl'));
+    lastV = v; state.last[q + ':' + k] = v;
+    const j = judge(q, k, raw, v);
+    if(j === 'precise'){
+      bot(q, spec.precise || (nameOf(spec) + ' (' + raw.trim() + ') est trop arrondie : à ce niveau de précision, je ne peux pas savoir si ton calcul est juste ou s’il cache une erreur. Donne-la avec 3 chiffres significatifs (par exemple 1,23 ou 0,123), sans arrondir tes résultats intermédiaires.'),
+          'ko', 'Plus de précision', [], [], spec.hidden ? k : null);
+      if(!spec.hidden) focusInput(q);
+      save(); return;
+    }
+    state.tries[q]++; state.hseq[q] = 0; state.hgate[q] = false;
+    if(!(spec.hidden && j === 'ok')) delete diag[q];   // valeur intermédiaire juste : on reste dans le diagnostic en cours
+    let good = false;
+    if(j === 'ok'){
+      good = true; state.ok[q + ':' + k] = true; pending[q] = false; state.unk[q] = 0; state.cnt[q]++;
+      state.att[q] = state.att[q] || []; state.att[q].push({k, v, ok:true});
+      node(q, spec.ok);
+    } else {
+      const known = candidates(q, k, v / spec.expected).length > 0;
+      if(known){ state.unk[q] = 0; state.cnt[q]++; diagnose(q, k, v); }
+      else {
+        state.unk[q] = (state.unk[q] || 0) + 1;
+        if(state.unk[q] === 1){ state.cnt[q]++; diagnose(q, k, v); }
+        else {                                   // deuxième valeur non reconnue d'affilée : sans doute au hasard
+          state.att[q] = state.att[q] || []; state.att[q].push({k, v, hyps:[], rnd:true});
+          diag[q] = {k, queue:[], i:-1};
+          const vv = '(' + fmt(v) + (spec.unit ? ' ' + spec.unit : '') + ')';
+          bot(q, state.unk[q] === 2
+              ? nameOf(spec) + ' ' + vv + ' ne correspond à aucun calcul que je reconnais, comme la précédente : on dirait que tu cherches un peu au hasard. Ce n’est pas grave, mais ça ne t’aidera pas à trouver, et ces valeurs ne comptent pas pour ouvrir la correction. Dis-moi plutôt ce qui te bloque.'
+              : 'Encore une valeur que je ne reconnais pas ' + vv + '. Plutôt que d’essayer au hasard, dis-moi ce qui te bloque : on va trouver ensemble par où commencer.',
+              'ko', 'Faisons une pause', COMMON['@bloque'].choices);
+        }
+      }
+    }
+    Q[q].updC();
+    if(!good && state.tries[q] >= 3 && !root.dataset.asked && cfg.comprendre){ root.dataset.asked = '1'; pending[q] = true; }
+    save();
+    if(good) checkDone();
+  }
 
   // ---------- questions ----------
-  function qDone(q){
-    const cfg = C.questions[q];
-    return state.corrSeen[q] || Object.keys(cfg.answers).every(k => state.ok[q + ':' + k]);
-  }
-  function unlocked(q){
-    const cfg = C.questions[q];
-    return state.tries[q] >= LOCK || Object.keys(cfg.answers).some(k => state.ok[q + ':' + k]);
-  }
+  const visible = q => Object.keys(C.questions[q].answers).filter(k => !C.questions[q].answers[k].hidden);
+  function qDone(q){ return state.corrSeen[q] || visible(q).every(k => state.ok[q + ':' + k]); }
+  function unlocked(q){ return state.cnt[q] >= LOCK || visible(q).some(k => state.ok[q + ':' + k]); }
   document.querySelectorAll('.question').forEach(root => {
     const q = root.dataset.q, cfg = C.questions[q]; if(!cfg) return;
-    state.used[q] = state.used[q] || 0; state.tries[q] = state.tries[q] || 0;
+    ['used','tries','cnt','unk','hseq'].forEach(f => state[f][q] = state[f][q] || 0);
+    const stmt = root.querySelector('p'); if(stmt && !stmt.id) stmt.id = 'enonce-' + q;
     const tools = root.querySelector('.tools');
     const hb = root.querySelector('.hint-btn'), hc = root.querySelector('.hint-count');
     const cb = root.querySelector('.corr-btn'), corr = root.querySelector('.correction');
@@ -801,7 +1045,7 @@ window.EXO = {
       fb.addEventListener('click', () => action(q, 'fiche'));
       tools.insertBefore(fb, cb);
     }
-    const api = { root };
+    const api = { root, stmt: stmt && stmt.id };
     function updH(){ hc.textContent = state.used[q] + ' / ' + cfg.hints.length + ' coup(s) de pouce utilisé(s)'; hb.disabled = state.used[q] >= cfg.hints.length; if(hb.disabled) hb.textContent = 'Plus de coup de pouce'; const t = document.getElementById('hint-total'); if(t) t.textContent = state.total; }
     function updC(){
       const open = corr.classList.contains('open');
@@ -811,18 +1055,24 @@ window.EXO = {
     }
     api.hint = () => {
       if(state.used[q] >= cfg.hints.length){ bot(q, 'Tu as utilisé tous les coups de pouce. Tu peux relire la fiche, ou regarder la correction si elle est débloquée.', '', '', [], ['fiche','corr']); return; }
-      const i = state.used[q]; state.used[q]++; state.total++; updH();
+      if(state.hseq[q] >= 2 && !state.hgate[q]){   // coups de pouce enchaînés sans proposer de valeur
+        state.hgate[q] = true; save();
+        bot(q, 'Tu as pris ' + state.hseq[q] + ' coups de pouce à la suite sans proposer de valeur. Essaie d’abord avec ceux que tu as : écris ce que tu sais sur ta feuille et propose une valeur, même approximative. Si tu es vraiment bloqué, dis-le-moi.', 'ko', 'Avant le coup de pouce suivant',
+            [{label:'Je propose une valeur', next:'@retry'}, {label:'Je suis bloqué', next:'@bloque'}]);
+        return;
+      }
+      const i = state.used[q]; state.used[q]++; state.total++; state.hseq[q]++; updH();
       const h = cfg.hints[i], tag = 'Coup de pouce ' + (i + 1) + (C.penalty ? ' (' + C.penalty + ')' : '');
       if(typeof h === 'string') bot(q, h, '', tag, [], ['retry','fiche']);
       else bot(q, h.ask, '', tag, [{label:h.yesLabel || 'Oui', next:'@hy:' + i}, {label:h.noLabel || 'Non', next:'@hn:' + i}]);
     };
-    hb.addEventListener('click', api.hint);
+    hb.addEventListener('click', () => api.hint());
     api.corr = () => {
       if(corr.classList.contains('open')){ corr.classList.remove('open'); updC(); return; }
       if(!unlocked(q)){
-        const n = state.tries[q];
-        bot(q, 'La correction s’ouvre après ' + LOCK + ' valeurs proposées, ou dès que tu as trouvé une bonne réponse. Tu en as proposé ' + n + '. Veux-tu essayer une valeur ? Même fausse, elle m’aide à voir où tu bloques.', 'ko', 'Avant la correction',
-            [{label:'Oui, je propose une valeur', next:'@retry'}, {label:'Je ne sais pas quoi proposer', next:'@lockno'}]);
+        const n = state.cnt[q];
+        bot(q, 'La correction s’ouvre après ' + LOCK + ' valeurs proposées (des valeurs cherchées, pas tapées au hasard), ou dès que tu as trouvé une bonne réponse. ' + (n ? 'Pour l’instant, ' + n + (n > 1 ? ' comptent' : ' compte') + '.' : 'Tu n’en as pas encore proposé.') + ' Veux-tu essayer une valeur ? Même fausse, elle m’aide à voir où tu bloques.', 'ko', 'Avant la correction',
+            [{label:'Oui, je propose une valeur', next:'@retry'}, {label:'Je ne sais pas quoi proposer', next:'@bloque'}]);
         return;
       }
       corr.classList.add('open'); state.corrSeen[q] = true; updC(); save();
@@ -830,32 +1080,17 @@ window.EXO = {
       checkDone();
     };
     cb.addEventListener('click', () => api.corr());
-
     root.querySelectorAll('.check-btn').forEach(btn => btn.addEventListener('click', () => {
-      const k = btn.dataset.k || 'main', spec = cfg.answers[k];
+      const k = btn.dataset.k || 'main';
       const inp = root.querySelector('input[data-k="' + k + '"]');
-      lastK[q] = k;
-      const v = num(inp.value); state.inputs[inp.id] = inp.value;
+      lastK[q] = k; state.inputs[inp.id] = inp.value;
       const lab = (root.querySelector('label[for="' + inp.id + '"]') || {}).innerHTML || '';
-      if(isNaN(v)){ bot(q, inp.value.trim() === '' ? 'Écris d’abord ta valeur numérique, sans l’unité.' : 'Je ne comprends pas cette écriture. Écris ta valeur sans l’unité, par exemple 2,06 ou 1/6.', 'ko', ''); return; }
-      me(lab + ' ' + inp.value + ' ' + ((inp.parentNode.querySelector('.unit') || {}).innerHTML || ''));
-      document.querySelectorAll('.hl').forEach(x => x.classList.remove('hl'));
-      state.tries[q]++; lastV = v; delete diag[q];
-      let good = false;
-      if(Math.abs(v / spec.expected - 1) <= (spec.tol || 0.03)){
-        good = true; state.ok[q + ':' + k] = true; pending[q] = false;
-        state.att[q] = state.att[q] || []; state.att[q].push({k, v, ok:true});
-        node(q, spec.ok);
-      } else diagnose(q, k, v);
-      updC();
-      if(!good && state.tries[q] >= 3 && !root.dataset.asked && cfg.comprendre){
-        root.dataset.asked = '1';
-        pending[q] = true;                // le point « as-tu compris ? » viendra à la fin de la branche
-      }
-      save();
-      if(good) checkDone();
+      checkValue(q, k, inp.value, lab + ' ' + inp.value + ' ' + ((inp.parentNode.querySelector('.unit') || {}).innerHTML || ''));
     }));
-    root.querySelectorAll('input').forEach(i => i.addEventListener('input', () => { state.inputs[i.id] = i.value; save(); }));
+    root.querySelectorAll('.answer input').forEach(i => {
+      i.addEventListener('input', () => { state.inputs[i.id] = i.value; save(); });
+      i.addEventListener('keydown', e => { if(e.key === 'Enter'){ const b = i.parentNode.querySelector('.check-btn'); if(b) b.click(); } });
+    });
     api.updH = updH; api.updC = updC; Q[q] = api;
   });
 
@@ -870,10 +1105,12 @@ window.EXO = {
       att.filter(a => !a.ok).forEach(a => {
         const ids = (a.conf && a.conf.length) ? a.conf : (a.hyps[0] || []);
         let lab;
-        if(a.conf && a.conf.length) lab = ids.map(id => errLabel(q, a.k, id)).join(' + ');
+        if(a.rnd) lab = 'valeur proposée au hasard';
+        else if(a.conf && a.conf.length) lab = ids.map(id => errLabel(q, a.k, id)).join(' + ');
         else if(a.hyps.length) lab = a.hyps.map(h => h.map(id => errLabel(q, a.k, id)).join(' + ')).join(' ou ') + ' (probable)';
         else lab = 'valeur non reconnue (' + fmt(a.v) + ')';
-        const key = (cfg.keyLabel && cfg.keyLabel[a.k] ? cfg.keyLabel[a.k] + ' : ' : '') + lab;
+        const sp = cfg.answers[a.k];
+        const key = (sp && sp.name && (sp.hidden || visible(q).length > 1) ? sp.name + ' : ' : '') + lab;
         counts[key] = (counts[key] || 0) + 1;
         ids.forEach(id => { const e = errById(q, a.k, id); if(!e) return;
           if(e.point && !points.includes(e.point)) points.push(e.point);
@@ -884,7 +1121,7 @@ window.EXO = {
       const notes = [];
       if(state.used[q]) notes.push(state.used[q] + ' coup(s) de pouce');
       if(state.corrSeen[q]) notes.push('correction consultée');
-      const fini = Object.keys(cfg.answers).every(k => state.ok[q + ':' + k]);
+      const fini = visible(q).every(k => state.ok[q + ':' + k]);
       if(!fini) notes.push('pas encore terminée');
       if(!refs.length && cfg.ref && (errs.length || state.used[q] || state.corrSeen[q])) refs.push(cfg.ref);
       return '<tr><td><b>' + (cfg.label || q) + '</b></td><td>' + (errs.length ? '<ul><li>' + errs.join('</li><li>') + '</li></ul>' : (fini ? 'Aucune : réussie du premier coup' : '—'))
@@ -905,6 +1142,12 @@ window.EXO = {
     showBilan(false);
     if(state.done || !Object.keys(Q).every(qDone)) return;
     state.done = true;
+    const lastMsg = log.querySelector('.msg.bot:last-child');
+    if(lastMsg && lastMsg.querySelector('.choices button:not(:disabled), .ask input:not(:disabled)')){ state.bilanWait = true; save(); return; }   // on laisse finir l'échange en cours
+    bilanMsg();
+  }
+  function bilanMsg(){
+    state.bilanWait = false;
     const q = Object.keys(Q).pop();
     bot(q, 'Tu as terminé l’exercice. Ton bilan est prêt sous les questions : erreurs commises, points à retravailler et fiches à revoir. Tu peux le télécharger en PDF.', 'ok', 'Bilan', [], ['bilan']);
   }
@@ -927,7 +1170,7 @@ window.EXO = {
   try{
     const s = JSON.parse(localStorage.getItem(KEY) || 'null');
     if(s){
-      Object.assign(state, s);
+      Object.keys(s).forEach(f => { if(state[f] && typeof state[f] === 'object' && s[f] && typeof s[f] === 'object') Object.assign(state[f], s[f]); else state[f] = s[f]; });
       Object.entries(state.inputs || {}).forEach(([id, v]) => { const i = document.getElementById(id); if(i) i.value = v; });
       Object.entries(state.corrSeen || {}).forEach(([q, v]) => { if(v && Q[q]){ const c = Q[q].root.querySelector('.correction'); if(c) c.classList.add('open'); } });
       if(state.log){ log.innerHTML = state.log; disableOld(); const d = document.createElement('div'); d.className = 'msg bot'; d.innerHTML = 'Tu reprends là où tu t’étais arrêté : tes réponses sont revenues.'; log.appendChild(d); scroll(); }
