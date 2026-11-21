@@ -6,6 +6,7 @@
 <title>Exercice — Fauteuil roulant : couple et vitesse du moteur</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
+/* moteur exo.css : début (ne pas modifier ici : 40_site/_moteur/exo.css) */
 :root{
   --dom:#0e5a6b; --dom-l:#e3f0f2; --ink:#1b2328; --mute:#5c6b73; --line:#d5dde1; --bg:#f6f8f9;
   --ess:#fff6d6; --ess-b:#e0b100; --ret:#e8f5ec; --ret-b:#2e8b57; --ctl:#fdeee6; --ctl-b:#d0602a;
@@ -182,6 +183,20 @@ figure.hl{outline-offset:4px}
 @media (max-width:1100px){.layout{grid-template-columns:minmax(0,1fr)}}
 table.data{table-layout:auto;word-break:normal;overflow-wrap:anywhere}
 .bilan{overflow-x:auto}
+
+/* v6 : vecteurs, note estimée, impression d'une zone (corrections) */
+.vec{position:relative;display:inline-block;line-height:1}
+.vec::before{content:"\2192";position:absolute;left:50%;transform:translateX(-50%);top:-.66em;font-size:.72em;font-weight:400;line-height:1}
+.bilan-note{margin:.2rem 0 .7rem;padding:.5rem .8rem;border-radius:8px;background:#eef6f6}
+.bilan-note span{font-size:.85em;color:#555}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+#pz{display:none}
+@media print{
+  body.print-zone>*:not(#pz){display:none!important}
+  body.print-zone #pz{display:block!important;border:none;padding:0;max-width:none}
+  body.print-zone #pz .correction{display:block!important}
+}
+/* moteur exo.css : fin */
 
 </style>
 </head>
@@ -628,6 +643,8 @@ window.EXO = {
 })();
 </script>
 <script>
+/* moteur exo.js : début (ne pas modifier ici : 40_site/_moteur/exo.js) */
+// exo.js v6 (moteur commun SI et SPC, référence : 40_site/_moteur/) : questions rédigées, fiche par question, réponse alternative, mark.
 // Moteur commun des pages d'exercice (version 4)
 // - panneau de dialogue à côté de l'exercice (l'androïde questionne l'élève)
 // - diagnostic par paramètres : chaque erreur type a un facteur ; le moteur teste chaque erreur seule
@@ -647,7 +664,8 @@ window.EXO = {
   const KEY = 'exo4:' + location.pathname;
   const LOCK = C.lockTries || 3;      // valeurs à proposer avant de débloquer la correction
   const DTOL = C.diagTol || 0.025;    // tolérance (relative) pour reconnaître une erreur type
-  const TOL = C.tol || 0.015;         // tolérance (relative) d'une bonne réponse
+  const TOL = C.tol || 0.015;
+  const RETR = C.retrouve || 'Je retrouve la formule';   // v5 : nom de la rubrique « démarche » des fiches         // tolérance (relative) d'une bonne réponse
   const COARSE = C.coarse || 0.03;    // demi-arrondi relatif maximal accepté (« 2,1 » pour 2,06 : oui ; « 2 » : non)
   const tri = '<svg viewBox="0 0 24 24" style="width:1em;height:1em;vertical-align:-2px" aria-hidden="true"><path d="M12 2.5 1.5 21h21z" fill="#d0602a"/><rect x="11" y="9" width="2" height="6.5" fill="#fff"/><rect x="11" y="17" width="2" height="2" fill="#fff"/></svg>';
   const ACT = { fiche:'Voir la fiche', fichefull:'Retravailler toute la fiche', exemple:'Ouvrir l’exemple de la fiche', hint:'Un coup de pouce', retry:'Je corrige ma réponse', corr:'Voir la correction', bilan:'Voir mon bilan' };
@@ -684,7 +702,7 @@ window.EXO = {
     ficheBase = i < 0 ? url : url.slice(0, i);
     ficheHash = i < 0 ? '' : url.slice(i + 1);
     frame.src = ficheBase + '?t=' + Date.now() + (ficheHash ? '#' + ficheHash : '');
-    ov.querySelector('b').textContent = C.ficheTitle || 'Fiche'; ov.classList.add('open');
+    ov.querySelector('b').textContent = (C.fiches && C.fiches[ficheBase]) || C.ficheTitle || 'Fiche'; ov.classList.add('open');
   }
   ov.querySelector('.close').addEventListener('click', () => ov.classList.remove('open'));
   ov.querySelector('.full').addEventListener('click', () => openFiche(ficheBase + '#top'));
@@ -798,10 +816,10 @@ window.EXO = {
   const Q = {};
   function action(q, a){
     const cfg = C.questions[q], el = Q[q];
-    const [k, h] = a.split('#');
-    if(k === 'fiche') openFiche(C.fiche + (h ? '#' + h : (cfg.fiche || '')));
-    else if(k === 'fichefull') { openFiche(C.fiche + '#top'); bot(q, 'Prends le temps de relire la fiche, surtout « Je retrouve la formule », puis refais l’exemple de la fiche. Reviens ensuite à l’exercice : tes réponses sont gardées.', '', '', [], ['retry']); }
-    else if(k === 'exemple') openFiche(C.fiche + '#exemple');
+    const [k, h] = a.split('#'); const FF = cfg.ficheFile || C.fiche;   // v5 : fiche propre à la question
+    if(k === 'fiche') openFiche(FF + (h ? '#' + h : (cfg.fiche || '')));
+    else if(k === 'fichefull') { openFiche(FF + '#top'); bot(q, 'Prends le temps de relire la fiche, surtout « ' + RETR + ' », puis refais l’exemple de la fiche. Reviens ensuite à l’exercice : tes réponses sont gardées.', '', '', [], ['retry']); }
+    else if(k === 'exemple') openFiche(FF + '#exemple');
     else if(k === 'hint') el.hint();
     else if(k === 'corr') el.corr();
     else if(k === 'bilan') showBilan(true);
@@ -824,7 +842,8 @@ window.EXO = {
   function say(q, n, prefix, id){
     const cfg = C.questions[q];
     if(n.hl) highlight(n.hl);
-    if(n.reset) state.unk[q] = 0;             // l'élève est entré dans la démarche : la prochaine valeur compte
+    if(n.reset) state.unk[q] = 0;
+    if(n.mark){ state.ok[q + ':' + n.mark] = true; save(); }   // v5 : repère posé par un nœud (auto-vérification)             // l'élève est entré dans la démarche : la prochaine valeur compte
     const dq = diag[q];
     if(n.err && dq && dq.att){
       const eid = (dq.i >= 0 && dq.queue[dq.i]) ? dq.queue[dq.i].id : n.err;
@@ -863,7 +882,7 @@ window.EXO = {
   }
   function notionNode(q){
     const cfg = C.questions[q];
-    return {reset:true, tag:'Revoir la notion', say:(cfg.notion || 'Bonne idée.') + ' Pour te servir de la fiche : 1. lis « L’essentiel » ; 2. refais « Je retrouve la formule » ligne par ligne sur ta feuille ; 3. traite l’exemple en cachant la solution, puis compare. Si quelque chose bloque pendant ta lecture, reviens me le dire ici. Veux-tu traiter l’exemple du même type ?',
+    return {reset:true, tag:'Revoir la notion', say:(cfg.notion || 'Bonne idée.') + ' Pour te servir de la fiche : 1. lis « L’essentiel » ; 2. refais « ' + RETR + ' » ligne par ligne sur ta feuille ; 3. traite l’exemple en cachant la solution, puis compare. Si quelque chose bloque pendant ta lecture, reviens me le dire ici. Veux-tu traiter l’exemple du même type ?',
             choices:[{label:'Oui, je fais l’exemple', next:'@ex'}], actions:['fiche']};
   }
   function go(q, next){
@@ -974,6 +993,7 @@ window.EXO = {
     const spec = C.questions[q].answers[k];
     const tol = spec.tol || TOL, a = Math.abs(v), h = halfUlp(str);
     const rel = Math.abs(v / spec.expected - 1);
+    if(spec.alt && Math.abs(v / spec.alt.v - 1) <= spec.alt.tol) return 'alt';   // v5 : autre méthode acceptée
     const inI = x => Math.abs(x) >= a - h - 1e-12 && Math.abs(x) <= a + h + 1e-12;
     const expIn = inI(spec.expected);
     const errVals = combos(q, k).map(c => spec.expected * c.f);
@@ -1002,10 +1022,10 @@ window.EXO = {
     state.tries[q]++; state.hseq[q] = 0; state.hgate[q] = false;
     if(!(spec.hidden && j === 'ok')) delete diag[q];   // valeur intermédiaire juste : on reste dans le diagnostic en cours
     let good = false;
-    if(j === 'ok'){
+    if(j === 'ok' || j === 'alt'){
       good = true; state.ok[q + ':' + k] = true; pending[q] = false; state.unk[q] = 0; state.cnt[q]++;
       state.att[q] = state.att[q] || []; state.att[q].push({k, v, ok:true});
-      node(q, spec.ok);
+      node(q, j === 'alt' ? spec.alt.node : spec.ok);
     } else {
       const known = candidates(q, k, v / spec.expected).length > 0;
       if(known){ state.unk[q] = 0; state.cnt[q]++; diagnose(q, k, v); }
@@ -1031,8 +1051,10 @@ window.EXO = {
 
   // ---------- questions ----------
   const visible = q => Object.keys(C.questions[q].answers).filter(k => !C.questions[q].answers[k].hidden);
-  function qDone(q){ return state.corrSeen[q] || visible(q).every(k => state.ok[q + ':' + k]); }
-  function unlocked(q){ return state.cnt[q] >= LOCK || visible(q).some(k => state.ok[q + ':' + k]); }
+  // v5 : question rédigée (sans valeur) : terminée et correction ouverte quand l'élève a rédigé
+  function finished(q){ const v = visible(q); return v.length ? v.every(k => state.ok[q + ':' + k]) : !!state.ok[q + ':redige']; }
+  function qDone(q){ return state.corrSeen[q] || finished(q); }
+  function unlocked(q){ return state.cnt[q] >= LOCK || visible(q).some(k => state.ok[q + ':' + k]) || !!state.ok[q + ':redige']; }
   document.querySelectorAll('.question').forEach(root => {
     const q = root.dataset.q, cfg = C.questions[q]; if(!cfg) return;
     ['used','tries','cnt','unk','hseq'].forEach(f => state[f][q] = state[f][q] || 0);
@@ -1055,7 +1077,7 @@ window.EXO = {
     }
     api.hint = () => {
       if(state.used[q] >= cfg.hints.length){ bot(q, 'Tu as utilisé tous les coups de pouce. Tu peux relire la fiche, ou regarder la correction si elle est débloquée.', '', '', [], ['fiche','corr']); return; }
-      if(state.hseq[q] >= 2 && !state.hgate[q]){   // coups de pouce enchaînés sans proposer de valeur
+      if(state.hseq[q] >= 2 && !state.hgate[q] && !cfg.redige){   // coups de pouce enchaînés sans proposer de valeur
         state.hgate[q] = true; save();
         bot(q, 'Tu as pris ' + state.hseq[q] + ' coups de pouce à la suite sans proposer de valeur. Essaie d’abord avec ceux que tu as : écris ce que tu sais sur ta feuille et propose une valeur, même approximative. Si tu es vraiment bloqué, dis-le-moi.', 'ko', 'Avant le coup de pouce suivant',
             [{label:'Je propose une valeur', next:'@retry'}, {label:'Je suis bloqué', next:'@bloque'}]);
@@ -1080,6 +1102,15 @@ window.EXO = {
       checkDone();
     };
     cb.addEventListener('click', () => api.corr());
+    const rb = root.querySelector('.redige-btn');   // v5 : question rédigée
+    if(rb && cfg.redige) rb.addEventListener('click', () => {
+      const r = cfg.redige;
+      me('J’ai rédigé ma réponse.');
+      state.ok[q + ':redige'] = true; state.hseq[q] = 0; state.hgate[q] = false; save(); updC();
+      bot(q, (r.intro || 'Vérifie ta copie point par point :') + '<ul><li>' + r.checks.join('</li><li>') + '</li></ul>' + (r.piege ? '<p>⚠ ' + r.piege + '</p>' : ''), '', 'Auto-vérification',
+          [{label:'Tout y est', next:'r_ok'}, {label:'Il me manque au moins un point', next:'r_manque'}]);
+      checkDone();
+    });
     root.querySelectorAll('.check-btn').forEach(btn => btn.addEventListener('click', () => {
       const k = btn.dataset.k || 'main';
       const inp = root.querySelector('input[data-k="' + k + '"]');
@@ -1098,6 +1129,7 @@ window.EXO = {
   const bilanBox = document.getElementById('bilan');
   function errLabel(q, k, id){ const e = errById(q, k, id); return e ? e.label : id; }
   function buildBilan(){
+    const P = Object.keys(Q).some(ptsOf);
     const rows = Object.keys(Q).map(q => {
       const cfg = C.questions[q], att = state.att[q] || [];
       const errs = [], points = [], refs = [];
@@ -1121,21 +1153,25 @@ window.EXO = {
       const notes = [];
       if(state.used[q]) notes.push(state.used[q] + ' coup(s) de pouce');
       if(state.corrSeen[q]) notes.push('correction consultée');
-      const fini = visible(q).every(k => state.ok[q + ':' + k]);
+      const fini = finished(q);
+      if(state.ok[q + ':manque']){ notes.push('rédaction incomplète (auto-vérification)'); if(cfg.point && !points.includes(cfg.point)) points.push(cfg.point); }
       if(!fini) notes.push('pas encore terminée');
       if(!refs.length && cfg.ref && (errs.length || state.used[q] || state.corrSeen[q])) refs.push(cfg.ref);
-      return '<tr><td><b>' + (cfg.label || q) + '</b></td><td>' + (errs.length ? '<ul><li>' + errs.join('</li><li>') + '</li></ul>' : (fini ? 'Aucune : réussie du premier coup' : '—'))
+      const pq = ptsOf(q), ptd = P ? '<td>' + (pq ? fmtP(scoreOf(q) * pq) + ' / ' + fmtP(pq) : '—') + '</td>' : '';
+      return '<tr><td><b>' + (cfg.label || q) + '</b></td>' + ptd + '<td>' + (errs.length ? '<ul><li>' + errs.join('</li><li>') + '</li></ul>' : (fini ? 'Aucune : réussie du premier coup' : '—'))
         + (notes.length ? '<div class="bnote">' + notes.join(' · ') + '</div>' : '') + '</td><td>'
         + (points.length ? '<ul><li>' + points.join('</li><li>') + '</li></ul>' : '—') + '</td><td>'
-        + (refs.length ? refs.map(r => r.a ? '<a class="fl" href="' + C.fiche + r.a + '">' + r.t + '</a>' : r.t).join('<br>') : '—') + '</td></tr>';
+        + (refs.length ? refs.map(r => r.a ? '<a class="fl" href="' + (r.f || C.fiche) + r.a + '">' + r.t + '</a>' : r.t).join('<br>') : '—') + '</td></tr>';
     }).join('');
     const d = new Date().toLocaleDateString('fr-FR');
     return '<p class="bilan-title"><b>' + (C.title || 'Exercice') + '</b> — bilan du ' + d + '</p>'
-      + '<table class="data bilan-t"><tr><th>Question</th><th>Erreurs commises</th><th>Points à retravailler</th><th>Fiche</th></tr>' + rows + '</table>';
+      + noteHtml()
+      + '<table class="data bilan-t"><tr><th>Question</th>' + (P ? '<th>Points (estimés)</th>' : '') + '<th>Erreurs commises</th><th>Points à retravailler</th><th>Fiche</th></tr>' + rows + '</table>';
   }
   function showBilan(scrollTo){
     if(!bilanBox) return;
     bilanBox.querySelector('.bilan-body').innerHTML = buildBilan();
+    updEnd();
     if(scrollTo) bilanBox.scrollIntoView({behavior:'smooth', block:'start'});
   }
   function checkDone(){
@@ -1149,7 +1185,7 @@ window.EXO = {
   function bilanMsg(){
     state.bilanWait = false;
     const q = Object.keys(Q).pop();
-    bot(q, 'Tu as terminé l’exercice. Ton bilan est prêt sous les questions : erreurs commises, points à retravailler et fiches à revoir. Tu peux le télécharger en PDF.', 'ok', 'Bilan', [], ['bilan']);
+    bot(q, 'Tu as terminé l’exercice. Ton bilan est prêt sous les questions : erreurs commises, points à retravailler et fiches à revoir. Tu peux le télécharger en PDF, ainsi que la correction détaillée ou courte, et voir ta note estimée.', 'ok', 'Bilan', [], ['bilan']);
   }
   if(bilanBox){
     bilanBox.addEventListener('click', e => { const a = e.target.closest('a.fl'); if(a){ e.preventDefault(); openFiche(a.getAttribute('href')); } });
@@ -1165,6 +1201,81 @@ window.EXO = {
       setTimeout(end, 1500);
     });
   }
+
+  // ---------- v6 : note estimée, corrections à télécharger, conversation ----------
+  function ptsOf(q){ const p = document.querySelector('.question[data-q="' + q + '"] p'); const m = p && p.textContent.match(/\((\d+(?:[.,]\d+)?)\s*pts?\)/); return m ? parseFloat(m[1].replace(',', '.')) : 0; }
+  function fmtP(x){ return (Math.round(x * 100) / 100).toLocaleString('fr-FR'); }
+  // 1 : réussie du premier coup, sans coup de pouce ni « il me manque un point » ; 0,5 : réussie après erreurs ou aides ; 0 : non terminée
+  function scoreOf(q){
+    if(!finished(q)) return 0;
+    const clean1 = !(state.att[q] || []).some(a => !a.ok) && !state.used[q] && !state.ok[q + ':manque'];
+    return clean1 ? 1 : 0.5;
+  }
+  function noteHtml(){
+    let tot = 0, got = 0;
+    Object.keys(Q).forEach(q => { const p = ptsOf(q); tot += p; got += scoreOf(q) * p; });
+    if(!tot) return '';
+    return '<p class="bilan-note">Note estimée : <b>' + fmtP(got) + ' / ' + fmtP(tot) + '</b> (soit ≈ ' + fmtP(Math.round(got / tot * 40) / 2) + ' / 20)'
+      + '<br><span>Estimation avec le barème proposé : tous les points si la question est réussie du premier coup sans aide, la moitié si elle est réussie après des erreurs, des coups de pouce ou un point manquant, rien si elle n’est pas terminée.</span></p>';
+  }
+  function updEnd(){
+    ['corr-pdf', 'corr-court'].forEach(id => { const b = document.getElementById(id); if(!b) return;
+      b.disabled = !state.done; b.title = state.done ? '' : 'Disponible quand tu as terminé toutes les questions'; });
+  }
+  function printZone(cls, title, html){
+    const z = document.createElement('div'); z.id = 'pz'; z.className = 'sheet'; z.innerHTML = html;
+    document.body.appendChild(z);
+    const t = document.title; document.title = title + ' - ' + (C.title || 'exercice');
+    document.body.classList.add('print-zone');
+    const end = () => { document.body.classList.remove('print-zone'); z.remove(); document.title = t; window.removeEventListener('afterprint', end); };
+    window.addEventListener('afterprint', end);
+    window.print();
+    setTimeout(end, 1500);
+  }
+  function corrDetail(){
+    const s = document.querySelector('.sheet').cloneNode(true);
+    const h = bilanBox && [...s.children].find(e => e.id === 'bilan');
+    if(h){ let e = h.previousElementSibling && h.previousElementSibling.tagName === 'H2' ? h.previousElementSibling : h; while(e){ const n = e.nextElementSibling; e.remove(); e = n; } }
+    s.querySelectorAll('.answer, .tools, .feedback, .redige-hint, .survey, .renvoi').forEach(e => e.remove());
+    s.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
+    printZone('', 'Correction détaillée', '<p class="bilan-title"><b>' + (C.title || 'Exercice') + '</b> — correction détaillée</p>' + s.innerHTML);
+  }
+  function corrCourte(){
+    const rows = Object.keys(Q).map(q => {
+      const sec = document.querySelector('.question[data-q="' + q + '"]'), c = sec && sec.querySelector('.correction');
+      if(!c) return '';
+      const k = c.cloneNode(true); k.querySelectorAll('.check, .renvoi, h3').forEach(e => e.remove());
+      const res = [...k.querySelectorAll('b')].map(b => b.innerHTML).filter(x => x.trim());
+      const p = ptsOf(q);
+      return '<tr><td><b>' + (C.questions[q].label || q) + '</b>' + (p ? '<br>' + fmtP(p) + ' pt' : '') + '</td><td>' + (res.length ? res.join(' ; ') : '—') + '</td></tr>';
+    }).join('');
+    printZone('', 'Correction courte', '<p class="bilan-title"><b>' + (C.title || 'Exercice') + '</b> — correction courte (résultats attendus)</p>'
+      + '<table class="data bilan-t"><tr><th>Question</th><th>Résultats attendus</th></tr>' + rows + '</table>'
+      + '<p class="counter">Rappel SPC : expression littérale complète, puis application numérique à la fin, avec l’unité.</p>');
+  }
+  function saveChat(){
+    const now = new Date(), pad = n => String(n).padStart(2, '0');
+    const stamp = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + '_' + pad(now.getHours()) + 'h' + pad(now.getMinutes());
+    const lines = [(C.title || 'Exercice') + ' — conversation enregistrée le ' + now.toLocaleString('fr-FR'), 'Page : ' + location.href, ''];
+    log.querySelectorAll('.msg').forEach(m => {
+      const who = m.classList.contains('me') ? 'ÉLÈVE' : 'ASSISTANT';
+      const tag = m.querySelector('.tag'), ch = [...m.querySelectorAll('.choices button')];
+      const c = m.cloneNode(true); c.querySelectorAll('.tag, .choices, .ask').forEach(e => e.remove());
+      lines.push('[' + who + (tag ? ' · ' + tag.textContent : '') + '] ' + c.innerText.trim());
+      if(ch.length) lines.push('   choix proposés : ' + ch.map(b => b.textContent.trim()).join(' | '));
+    });
+    const st = Object.assign({}, state); delete st.log;
+    lines.push('', '--- Bilan ---');
+    Object.keys(Q).forEach(q => lines.push((C.questions[q].label || q) + ' : ' + (finished(q) ? 'terminée' : 'non terminée') + (ptsOf(q) ? ', ' + fmtP(scoreOf(q) * ptsOf(q)) + ' / ' + fmtP(ptsOf(q)) + ' pt' : '')
+      + (state.used[q] ? ', ' + state.used[q] + ' coup(s) de pouce' : '') + (state.corrSeen[q] ? ', correction consultée' : '') + ', ' + (state.att[q] || []).length + ' essai(s)'));
+    const nh = document.createElement('div'); nh.innerHTML = noteHtml(); if(nh.textContent) lines.push(nh.querySelector('b') ? 'Note estimée : ' + nh.querySelector('b').textContent : '');
+    lines.push('', '--- Données détaillées (pour analyse) ---', JSON.stringify(st, null, 1));
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['﻿' + lines.join('\r\n')], {type:'text/plain;charset=utf-8'}));
+    a.download = 'conversation_' + (C.title || 'exercice').replace(/[^\wÀ-ÿ]+/g, '-').slice(0, 40) + '_' + stamp + '.txt';
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+  [['corr-pdf', corrDetail], ['corr-court', corrCourte], ['chat-save', saveChat]].forEach(([id, f]) => { const b = document.getElementById(id); if(b) b.addEventListener('click', () => { showBilan(false); if(!b.disabled) f(); }); });
 
   // ---------- restauration ----------
   try{
@@ -1195,6 +1306,7 @@ window.EXO = {
     try { navigator.clipboard.writeText(out).then(done, () => manual(out)); } catch(e){ manual(out); }
   });
 })();
+/* moteur exo.js : fin */
 
 </script>
 </body>
